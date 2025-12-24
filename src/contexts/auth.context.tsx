@@ -30,14 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Check if user is already logged in on mount
-  useEffect(() => {
-    const token = Cookies.get('access_token');
-    setIsAuthenticated(!!token);
-    setIsLoading(false);
-  }, []);
-
-  // Determine role based on email
+  // Determine role based on email - Moved up for use in useEffect
   const extractRoleFromEmail = (email: string): string | null => {
     const lowerEmail = email.toLowerCase();
     
@@ -51,6 +44,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return null;
   };
 
+  // Check if user is already logged in on mount
+  useEffect(() => {
+    const initAuth = async () => {
+      const token = Cookies.get('access_token');
+      
+      if (!token) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        // Fetch user details to restore role and profile
+        const authService = (await import('@/services/auth.service')).default;
+        const userData = await authService.getMe();
+        
+        setUser(userData);
+        
+        if (userData.role) {
+          setUserRole(userData.role);
+        } else if (userData.email) {
+          setUserRole(extractRoleFromEmail(userData.email));
+        }
+        
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error('Failed to restore session:', error);
+        // If token is invalid (e.g. expired), clear it
+        Cookies.remove('access_token');
+        setIsAuthenticated(false);
+        setUser(null);
+        setUserRole(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initAuth();
+  }, []);
+
   const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
     setError(null);
@@ -61,7 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       Cookies.set('access_token', response.token, {
         expires: 7,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'Lax', // Changed from strict to Lax for better dev experience
       });
 
       setUser(response.user || null);

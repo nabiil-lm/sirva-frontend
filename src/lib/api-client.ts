@@ -1,8 +1,8 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-// Ensure this points to /api so that /auth/login/ appends correctly
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+// Ensure proper /api endpoint
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080').replace(/\/$/, '') + '/api';
 
 const apiClient = axios.create({
   baseURL: API_URL,
@@ -27,7 +27,9 @@ apiClient.interceptors.request.use(
 
     const token = Cookies.get('access_token');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      // FIX: Django REST Framework TokenAuthentication expects "Token <token>"
+      // NOT "Bearer <token>" (which is for JWT)
+      config.headers.Authorization = `Token ${token}`;
     }
     return config;
   },
@@ -40,7 +42,10 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       Cookies.remove('access_token');
-      window.location.href = '/auth/login';
+      // Only redirect if we are not already on the login page to avoid loops
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/auth/login')) {
+        window.location.href = '/auth/login';
+      }
     }
     return Promise.reject(error);
   }
