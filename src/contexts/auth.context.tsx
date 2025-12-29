@@ -6,8 +6,16 @@ import Cookies from 'js-cookie';
 export interface User {
   id: string;
   email: string;
-  name?: string;
+  first_name?: string;
+  last_name?: string;
   role?: string;
+  avatar?: string;
+  preferences?: {
+    darkMode?: boolean;
+    emailNotifs?: boolean;
+    securityAlerts?: boolean;
+    language?: string;
+  };
 }
 
 interface AuthContextType {
@@ -17,6 +25,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>; // Added refreshUser method
   error: string | null;
   clearError: () => void;
 }
@@ -44,6 +53,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return null;
   };
 
+  // Helper to fetch user data
+  const fetchUserData = async () => {
+    const authService = (await import('@/services/auth.service')).default;
+    const userData = await authService.getMe();
+    
+    setUser(userData);
+    
+    if (userData.role) {
+      setUserRole(userData.role);
+    } else if (userData.email) {
+      setUserRole(extractRoleFromEmail(userData.email));
+    }
+    return userData;
+  };
+
   // Check if user is already logged in on mount
   useEffect(() => {
     const initAuth = async () => {
@@ -55,18 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       try {
-        // Fetch user details to restore role and profile
-        const authService = (await import('@/services/auth.service')).default;
-        const userData = await authService.getMe();
-        
-        setUser(userData);
-        
-        if (userData.role) {
-          setUserRole(userData.role);
-        } else if (userData.email) {
-          setUserRole(extractRoleFromEmail(userData.email));
-        }
-        
+        await fetchUserData();
         setIsAuthenticated(true);
       } catch (error) {
         console.error('Failed to restore session:', error);
@@ -82,6 +95,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     initAuth();
   }, []);
+
+  // Theme Management Effect
+  useEffect(() => {
+    // Only apply dark mode if user is logged in and has explicitly enabled it
+    if (user && user.preferences?.darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      // Revert to light mode if no user or darkMode is false
+      document.documentElement.classList.remove('dark');
+    }
+  }, [user]);
 
   const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
@@ -142,6 +166,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    try {
+      await fetchUserData();
+    } catch (error) {
+      console.error('Failed to refresh user data:', error);
+    }
+  }, []);
+
   const clearError = useCallback(() => {
     setError(null);
   }, []);
@@ -155,6 +187,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         login,
         logout,
+        refreshUser,
         error,
         clearError,
       }}

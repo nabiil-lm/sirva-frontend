@@ -11,9 +11,39 @@ export interface LoginResponse {
   user?: {
     id: string;
     email: string;
-    name?: string;
+    first_name?: string; // Changed from name
+    last_name?: string;  // Added last_name
     role?: string;
+    avatar?: string;
+    preferences?: {
+      darkMode?: boolean;
+      emailNotifs?: boolean;
+      securityAlerts?: boolean;
+      language?: string;
+    };
   };
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  role: 'AM' | 'SO';
+}
+
+export interface UpdateProfileRequest {
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  preferences?: Record<string, string | number | boolean | null>;
+  avatar?: File;
+}
+
+export interface ChangePasswordRequest {
+  new_password: string;
+  re_new_password: string;
+  current_password: string;
 }
 
 export interface AuthError {
@@ -102,6 +132,52 @@ class AuthService {
     }
   }
 
+  async register(data: RegisterRequest): Promise<void> {
+    try {
+      // Use default apiClient which points to /api
+      // This will result in POST /api/auth/users/ which matches Djoser endpoint
+      await apiClient.post(
+        'auth/users/', 
+        data
+      );
+    } catch (error: unknown) {
+      console.error('Registration error details:', error);
+      
+      const axiosError = error as AxiosError;
+      const errorData = axiosError.response?.data as ErrorResponse | undefined;
+      
+      // Debug log to see the exact validation error from backend
+      if (errorData) {
+        console.error('Validation Errors:', JSON.stringify(errorData, null, 2));
+      }
+      
+      let message = 'Registration failed. Please try again.';
+      const statusCode = axiosError.response?.status || 500;
+
+      if (errorData) {
+        // Extract field-specific errors if available
+        if (Array.isArray(errorData)) {
+            message = errorData[0];
+        } else {
+            if (errorData.email) message = `Email: ${Array.isArray(errorData.email) ? errorData.email[0] : errorData.email}`;
+            else if (errorData.password) message = `Password: ${Array.isArray(errorData.password) ? errorData.password[0] : errorData.password}`;
+            else if (errorData.non_field_errors) message = Array.isArray(errorData.non_field_errors) ? errorData.non_field_errors[0] : errorData.non_field_errors;
+            else if (typeof errorData === 'string') message = errorData;
+            // Handle array of errors for other fields
+            else {
+               const firstKey = Object.keys(errorData)[0];
+               if (firstKey) {
+                   const val = errorData[firstKey];
+                   message = `${firstKey}: ${Array.isArray(val) ? val[0] : val}`;
+               }
+            }
+        }
+      }
+
+      throw { message, statusCode } as AuthError;
+    }
+  }
+
   async logout(): Promise<void> {
     try {
       // Optional: Call backend logout if needed
@@ -117,6 +193,24 @@ class AuthService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async updateProfile(data: UpdateProfileRequest): Promise<Record<string, unknown>> {
+    const formData = new FormData();
+    if (data.first_name) formData.append('first_name', data.first_name);
+    if (data.last_name) formData.append('last_name', data.last_name);
+    if (data.email) formData.append('email', data.email);
+    if (data.preferences) formData.append('preferences', JSON.stringify(data.preferences));
+    if (data.avatar) formData.append('avatar', data.avatar);
+
+    const response = await apiClient.patch('/auth/users/me/', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data;
+  }
+
+  async changePassword(data: ChangePasswordRequest): Promise<void> {
+    await apiClient.post('/auth/users/set_password/', data);
   }
 }
 

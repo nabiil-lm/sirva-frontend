@@ -199,11 +199,11 @@ export function ArchitectureUpload({ dossier: baseDossier, onUploadComplete, onS
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-5xl mx-auto">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">Architecture Documents</h2>
-          <p className="text-slate-500">Upload technical documentation for cross-check analysis.</p>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Architecture Documents</h2>
+          <p className="text-slate-500 dark:text-slate-400">Upload technical documentation for cross-check analysis.</p>
         </div>
         {isLocked && (
-          <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-600 rounded-full text-sm font-medium">
+          <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-600 rounded-full text-sm font-medium dark:bg-slate-800 dark:text-slate-300">
             <Lock className="w-4 h-4" />
             {isReadOnly ? "Stage Completed" : "Uploads Locked"}
           </div>
@@ -213,17 +213,17 @@ export function ArchitectureUpload({ dossier: baseDossier, onUploadComplete, onS
       {!isLocked && (
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Upload Form - Takes up 2 columns */}
-          <Card className="lg:col-span-2 p-0 border-slate-200 shadow-sm bg-white overflow-hidden">
-            <div className="p-6 border-b border-slate-100 bg-slate-50/50">
-              <h3 className="font-semibold text-slate-900">Add New Document</h3>
+          <Card className="lg:col-span-2 p-0 border-slate-200 shadow-sm bg-white overflow-hidden dark:bg-slate-900 dark:border-slate-800">
+            <div className="p-6 border-b border-slate-100 bg-slate-50/50 dark:bg-slate-800 dark:border-slate-700">
+              <h3 className="font-semibold text-slate-900 dark:text-white">Add New Document</h3>
             </div>
             <form onSubmit={handleUpload} className="p-6 space-y-6">
               {/* Drag & Drop Area */}
               <div 
                 className={cn(
                   "relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ease-in-out",
-                  dragActive ? "border-blue-500 bg-blue-50" : "border-slate-200 hover:border-blue-400 hover:bg-slate-50",
-                  file ? "bg-blue-50/50 border-blue-200" : ""
+                  dragActive ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-400" : "border-slate-200 hover:border-blue-400 hover:bg-slate-50 dark:bg-slate-950/50 dark:border-slate-700 dark:hover:border-slate-600",
+                  file ? "bg-blue-50/50 border-blue-200 dark:bg-blue-900/10 dark:border-blue-800" : ""
                 )}
                 onDragEnter={handleDrag}
                 onDragLeave={handleDrag}
@@ -241,12 +241,12 @@ export function ArchitectureUpload({ dossier: baseDossier, onUploadComplete, onS
                 <div className="flex flex-col items-center justify-center gap-2 pointer-events-none">
                   {file ? (
                     <>
-                      <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-2">
+                      <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-2 dark:bg-blue-900 dark:text-blue-300">
                         <FileText className="w-6 h-6" />
                       </div>
-                      <p className="text-sm font-medium text-slate-900">{file.name}</p>
-                      <p className="text-xs text-slate-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                      <Button variant="ghost" size="sm" className="mt-2 text-blue-600 hover:text-blue-700 z-20 pointer-events-auto" onClick={(e) => {
+                      <p className="text-sm font-medium text-slate-900 dark:text-white">{file.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                      <Button variant="ghost" size="sm" className="mt-2 text-blue-600 hover:text-blue-700 z-20 pointer-events-auto dark:text-blue-400 dark:hover:text-blue-300" onClick={(e) => {
                         e.preventDefault();
                         setFile(null);
                         // Reset input value if needed via ref or id
@@ -258,13 +258,13 @@ export function ArchitectureUpload({ dossier: baseDossier, onUploadComplete, onS
                     </>
                   ) : (
                     <>
-                      <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-2 group-hover:bg-blue-50 group-hover:text-blue-500 transition-colors">
+                      <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-2 group-hover:bg-blue-50 group-hover:text-blue-500 transition-colors dark:bg-slate-800 dark:text-slate-500 dark:group-hover:bg-blue-900/20 dark:group-hover:text-blue-400">
                         <UploadCloud className="w-6 h-6" />
                       </div>
-                      <p className="text-sm font-medium text-slate-900">
-                        <span className="text-blue-600">Click to upload</span> or drag and drop
+                      <p className="text-sm font-medium text-slate-900 dark:text-white">
+                        <span className="text-blue-600 dark:text-blue-400">Click to upload</span> or drag and drop
                       </p>
-                      <p className="text-xs text-slate-500">PDF files only (max 50MB)</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">PDF files only (max 50MB)</p>
                     </>
                   )}
                 </div>
@@ -272,21 +272,21 @@ export function ArchitectureUpload({ dossier: baseDossier, onUploadComplete, onS
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-slate-700 font-medium">Document Name</Label>
+                  <Label htmlFor="name" className="text-slate-700 font-medium dark:text-slate-300">Document Name</Label>
                   <Input 
                     id="name" 
                     placeholder="e.g. Network Architecture Diagram" 
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
-                    className="h-10"
+                    className="h-10 dark:bg-slate-950 dark:border-slate-700 dark:text-white"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="desc" className="text-slate-700 font-medium">Description (Optional)</Label>
+                  <Label htmlFor="desc" className="text-slate-700 font-medium dark:text-slate-300">Description (Optional)</Label>
                   <Textarea 
                     id="desc" 
                     placeholder="Briefly describe what this document contains..." 
-                    className="min-h-[80px] resize-none"
+                    className="min-h-[80px] resize-none dark:bg-slate-950 dark:border-slate-700 dark:text-white"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
@@ -294,19 +294,19 @@ export function ArchitectureUpload({ dossier: baseDossier, onUploadComplete, onS
               </div>
 
               <div className="pt-2">
-                <div className="flex items-start space-x-3 p-4 bg-amber-50 rounded-lg border border-amber-100 mb-6">
+                <div className="flex items-start space-x-3 p-4 bg-amber-50 rounded-lg border border-amber-100 mb-6 dark:bg-amber-900/10 dark:border-amber-900/30">
                   <input 
                     id="rssi" 
                     type="checkbox"
                     checked={rssiConfirmed}
                     onChange={(e) => setRssiConfirmed(e.target.checked)}
-                    className="mt-1 w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-600 cursor-pointer"
+                    className="mt-1 w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-600 cursor-pointer dark:bg-slate-900 dark:border-slate-600"
                   />
                   <label
                     htmlFor="rssi"
-                    className="text-sm text-slate-700 cursor-pointer select-none"
+                    className="text-sm text-slate-700 cursor-pointer select-none dark:text-slate-300"
                   >
-                    <span className="font-medium text-amber-900 block mb-0.5">RSSI Validation Required</span>
+                    <span className="font-medium text-amber-900 block mb-0.5 dark:text-amber-400">RSSI Validation Required</span>
                     I confirm that this document has been reviewed and validated by the Chief Information Security Officer (RSSI).
                   </label>
                 </div>
@@ -325,12 +325,12 @@ export function ArchitectureUpload({ dossier: baseDossier, onUploadComplete, onS
 
           {/* Sidebar / Instructions - Takes up 1 column */}
           <div className="space-y-6">
-            <div className="bg-blue-50 border border-blue-100 rounded-xl p-6">
-              <h4 className="font-semibold text-blue-900 flex items-center gap-2 mb-3">
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 dark:bg-blue-900/10 dark:border-blue-900/30">
+              <h4 className="font-semibold text-blue-900 flex items-center gap-2 mb-3 dark:text-blue-300">
                 <AlertCircle className="w-5 h-5" />
                 Required Documents
               </h4>
-              <ul className="space-y-3 text-sm text-blue-800">
+              <ul className="space-y-3 text-sm text-blue-800 dark:text-blue-200">
                 <li className="flex gap-2">
                   <span className="text-blue-500">•</span>
                   Network Architecture Diagrams
@@ -354,38 +354,38 @@ export function ArchitectureUpload({ dossier: baseDossier, onUploadComplete, onS
       )}
 
       <div className="space-y-4">
-        <h3 className="font-semibold text-slate-900 flex items-center gap-2 text-lg">
+        <h3 className="font-semibold text-slate-900 flex items-center gap-2 text-lg dark:text-white">
           Uploaded Documents 
-          <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-bold">{docs.length}</span>
+          <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-bold dark:bg-slate-800 dark:text-slate-300">{docs.length}</span>
         </h3>
         {docs.length === 0 ? (
-          <div className="text-center py-16 bg-slate-50 rounded-xl border border-dashed border-slate-300 text-slate-500">
-            <FileText className="w-10 h-10 mx-auto mb-3 text-slate-300" />
+          <div className="text-center py-16 bg-slate-50 rounded-xl border border-dashed border-slate-300 text-slate-500 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-400">
+            <FileText className="w-10 h-10 mx-auto mb-3 text-slate-300 dark:text-slate-600" />
             <p>No documents uploaded yet.</p>
           </div>
         ) : (
           <div className="grid gap-4">
             {docs.map((doc: ArchitectureDoc) => (
-              <div key={doc.id} className="group flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-blue-200 transition-all">
+              <div key={doc.id} className="group flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-blue-200 transition-all dark:bg-slate-900 dark:border-slate-800 dark:hover:border-blue-800">
                 <div 
                   className="flex items-center gap-4 cursor-pointer flex-1 min-w-0" 
                   onClick={() => handleDownload(doc)}
                 >
-                  <div className="w-10 h-10 rounded-lg bg-red-50 text-red-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-lg bg-red-50 text-red-500 flex items-center justify-center flex-shrink-0 dark:bg-red-900/20 dark:text-red-400">
                     <FileText className="w-5 h-5" />
                   </div>
                   <div className="min-w-0">
-                    <h4 className="font-medium text-slate-900 truncate group-hover:text-blue-600 transition-colors">
+                    <h4 className="font-medium text-slate-900 truncate group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400">
                       {doc.display_name || doc.filename}
                     </h4>
-                    <div className="flex items-center gap-3 text-xs text-slate-500 mt-0.5">
+                    <div className="flex items-center gap-3 text-xs text-slate-500 mt-0.5 dark:text-slate-400">
                       <span>{(doc.size / 1024 / 1024).toFixed(2)} MB</span>
-                      <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                      <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
                       <span>{new Date(doc.uploaded_at).toLocaleDateString()}</span>
                       {doc.rssi_confirmed && (
                         <>
-                          <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                          <span className="flex items-center gap-1 text-emerald-600 font-medium">
+                          <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+                          <span className="flex items-center gap-1 text-emerald-600 font-medium dark:text-emerald-400">
                             <CheckCircle2 className="w-3 h-3" /> Validated
                           </span>
                         </>
@@ -399,7 +399,7 @@ export function ArchitectureUpload({ dossier: baseDossier, onUploadComplete, onS
                     variant="ghost" 
                     size="icon" 
                     onClick={(e) => { e.stopPropagation(); handleDownload(doc); }}
-                    className="text-slate-400 hover:text-blue-600 hover:bg-blue-50"
+                    className="text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
                     title="Download / View"
                   >
                     <Download className="w-4 h-4" />
@@ -410,7 +410,7 @@ export function ArchitectureUpload({ dossier: baseDossier, onUploadComplete, onS
                       variant="ghost" 
                       size="icon" 
                       onClick={(e) => { e.stopPropagation(); handleDelete(doc.id); }}
-                      className="text-slate-400 hover:text-red-600 hover:bg-red-50"
+                      className="text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                       title="Delete"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -424,10 +424,10 @@ export function ArchitectureUpload({ dossier: baseDossier, onUploadComplete, onS
       </div>
 
       {!isLocked && docs.length > 0 && (
-        <div className="pt-6 border-t border-slate-200">
-          <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6 flex gap-3">
-            <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-blue-800">
+        <div className="pt-6 border-t border-slate-200 dark:border-slate-800">
+          <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6 flex gap-3 dark:bg-blue-900/10 dark:border-blue-900/30">
+            <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5 dark:text-blue-400" />
+            <div className="text-sm text-blue-800 dark:text-blue-200">
               <p className="font-semibold mb-1">Ready to submit?</p>
               <p>Submitting will lock these documents and automatically start the IA2 cross-check analysis.</p>
             </div>
@@ -448,16 +448,16 @@ export function ArchitectureUpload({ dossier: baseDossier, onUploadComplete, onS
 
       {/* Confirmation Dialog */}
       <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
-        <DialogContent className="sm:max-w-[450px]">
+        <DialogContent className="sm:max-w-[450px] dark:bg-slate-900 dark:border-slate-800">
           <DialogHeader>
-            <div className="mx-auto w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mb-4">
-              <AlertTriangle className="w-6 h-6 text-amber-600" />
+            <div className="mx-auto w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mb-4 dark:bg-amber-900/20">
+              <AlertTriangle className="w-6 h-6 text-amber-600 dark:text-amber-500" />
             </div>
-            <DialogTitle className="text-center text-xl">Confirm Submission</DialogTitle>
-            <DialogDescription className="text-center pt-2">
+            <DialogTitle className="text-center text-xl dark:text-white">Confirm Submission</DialogTitle>
+            <DialogDescription className="text-center pt-2 dark:text-slate-400">
               Are you sure you want to submit these documents? 
               <br /><br />
-              <span className="font-medium text-slate-900">This action cannot be undone.</span>
+              <span className="font-medium text-slate-900 dark:text-white">This action cannot be undone.</span>
               <br />
               Once submitted, you will no longer be able to upload or remove documents, and the IA2 analysis will begin immediately.
             </DialogDescription>
@@ -466,7 +466,7 @@ export function ArchitectureUpload({ dossier: baseDossier, onUploadComplete, onS
             <Button
               variant="outline"
               onClick={() => setIsConfirmOpen(false)}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               Cancel
             </Button>
@@ -482,13 +482,13 @@ export function ArchitectureUpload({ dossier: baseDossier, onUploadComplete, onS
 
       {/* NEW: Delete Confirmation Dialog */}
       <Dialog open={isDeleteConfirmOpen} onOpenChange={setIsDeleteConfirmOpen}>
-        <DialogContent className="sm:max-w-[400px]">
+        <DialogContent className="sm:max-w-[400px] dark:bg-slate-900 dark:border-slate-800">
           <DialogHeader>
-            <div className="mx-auto w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
-              <Trash2 className="w-6 h-6 text-red-600" />
+            <div className="mx-auto w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4 dark:bg-red-900/20">
+              <Trash2 className="w-6 h-6 text-red-600 dark:text-red-500" />
             </div>
-            <DialogTitle className="text-center text-xl">Delete Document</DialogTitle>
-            <DialogDescription className="text-center pt-2">
+            <DialogTitle className="text-center text-xl dark:text-white">Delete Document</DialogTitle>
+            <DialogDescription className="text-center pt-2 dark:text-slate-400">
               Are you sure you want to delete this document?
               <br />
               This action cannot be undone.
@@ -498,7 +498,7 @@ export function ArchitectureUpload({ dossier: baseDossier, onUploadComplete, onS
             <Button
               variant="outline"
               onClick={() => setIsDeleteConfirmOpen(false)}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               Cancel
             </Button>

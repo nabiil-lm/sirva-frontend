@@ -24,7 +24,7 @@ const renderBoldText = (text: string) => {
   const parts = text.split(/(\*\*.*?\*\*)/g);
   return parts.map((part, index) => {
     if (part.startsWith('**') && part.endsWith('**')) {
-      return <strong key={index} className="font-semibold text-slate-900">{part.slice(2, -2)}</strong>;
+      return <strong key={index} className="font-semibold text-slate-900 dark:text-white">{part.slice(2, -2)}</strong>;
     }
     return <span key={index}>{part}</span>;
   });
@@ -76,13 +76,13 @@ export function IA2Results({ dossier, onContinue, isReadOnly = false }: IA2Resul
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold text-slate-900">IA2 Cross-Check Results</h2>
-        <p className="text-slate-500">
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">IA2 Cross-Check Results</h2>
+        <p className="text-slate-500 dark:text-slate-400">
           Comparison between questionnaire responses and architecture documents.
         </p>
       </div>
 
-      <Card className="p-8 border-slate-200 shadow-sm bg-white flex flex-col items-center justify-center min-h-[300px]">
+      <Card className="p-8 border-slate-200 shadow-sm flex flex-col items-center justify-center min-h-[300px] dark:border-slate-800">
         <ScoreGauge score={score} size={280} />
         <div className="mt-12 text-center max-w-md">
           {isPassing ? (
@@ -96,7 +96,7 @@ export function IA2Results({ dossier, onContinue, isReadOnly = false }: IA2Resul
               <span>Inconsistencies Detected</span>
             </div>
           )}
-          <p className="text-slate-600">
+          <p className="text-slate-600 dark:text-slate-300">
             {isPassing 
               ? "Your architecture documentation supports your security claims."
               : "Discrepancies found between your answers and the provided documents."}
@@ -104,15 +104,15 @@ export function IA2Results({ dossier, onContinue, isReadOnly = false }: IA2Resul
         </div>
       </Card>
 
-      <Card className="p-8 border-slate-200 shadow-sm bg-white">
-        <div className="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+      <Card className="p-8 border-slate-200 shadow-sm dark:border-slate-800">
+        <div className="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4 dark:border-slate-800">
           <FileText className="w-6 h-6 text-blue-600" />
-          <h3 className="text-xl font-bold text-slate-900">Analysis Summary</h3>
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white">Analysis Summary</h3>
         </div>
         <div className="space-y-8">
           <div>
-            <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wide mb-3">Executive Summary</h4>
-            <p className="text-slate-700 leading-relaxed whitespace-pre-line bg-slate-50 p-4 rounded-lg border border-slate-100">
+            <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wide mb-3 dark:text-slate-200">Executive Summary</h4>
+            <p className="text-slate-700 leading-relaxed whitespace-pre-line bg-slate-50 p-4 rounded-lg border border-slate-100 dark:bg-slate-950 dark:border-slate-800 dark:text-slate-300">
               {renderBoldText(summaryText)}
             </p>
           </div>
@@ -121,11 +121,11 @@ export function IA2Results({ dossier, onContinue, isReadOnly = false }: IA2Resul
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  <h4 className="text-sm font-bold text-emerald-700 uppercase tracking-wide">Validated Points</h4>
+                  <h4 className="text-sm font-bold text-emerald-700 uppercase tracking-wide dark:text-emerald-500">Validated Points</h4>
                 </div>
                 <ul className="space-y-2">
                   {findings.strengths.map((s: string, i: number) => (
-                    <li key={i} className="flex gap-2 text-sm text-slate-600">
+                    <li key={i} className="flex gap-2 text-sm text-slate-600 dark:text-slate-400">
                       <span className="text-emerald-500 mt-1">•</span>
                       <span>{renderBoldText(s)}</span>
                     </li>
@@ -137,11 +137,11 @@ export function IA2Results({ dossier, onContinue, isReadOnly = false }: IA2Resul
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <AlertTriangle className="w-4 h-4 text-red-600" />
-                  <h4 className="text-sm font-bold text-red-700 uppercase tracking-wide">Discrepancies</h4>
+                  <h4 className="text-sm font-bold text-red-700 uppercase tracking-wide dark:text-red-500">Discrepancies</h4>
                 </div>
                 <ul className="space-y-2">
                   {findings.weaknesses.map((w: string, i: number) => (
-                    <li key={i} className="flex gap-2 text-sm text-slate-600">
+                    <li key={i} className="flex gap-2 text-sm text-slate-600 dark:text-slate-400">
                       <span className="text-red-500 mt-1">•</span>
                       <span>{renderBoldText(w)}</span>
                     </li>
@@ -153,31 +153,31 @@ export function IA2Results({ dossier, onContinue, isReadOnly = false }: IA2Resul
         </div>
       </Card>
 
-      <Card className="p-8 border-slate-200 shadow-sm bg-white">
-        <div className="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+      <Card className="p-8 border-slate-200 shadow-sm dark:border-slate-800">
+        <div className="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4 dark:border-slate-800">
           <Lightbulb className="w-6 h-6 text-amber-500" />
-          <h3 className="text-xl font-bold text-slate-900">Recommendations</h3>
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white">Recommendations</h3>
         </div>
         <div className="space-y-6">
            {findings.recommendations && findings.recommendations.length > 0 ? (
               <div className="grid gap-3">
                 {findings.recommendations.map((rec: string, i: number) => (
-                  <div key={i} className="flex gap-4 p-4 rounded-lg border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors">
-                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold mt-0.5">
+                  <div key={i} className="flex gap-4 p-4 rounded-lg border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors dark:bg-slate-950 dark:border-slate-800 dark:hover:bg-slate-800">
+                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold mt-0.5 dark:bg-blue-900 dark:text-blue-200">
                       {i + 1}
                     </div>
-                    <p className="text-slate-700 text-sm leading-relaxed">{renderBoldText(rec)}</p>
+                    <p className="text-slate-700 text-sm leading-relaxed dark:text-slate-300">{renderBoldText(rec)}</p>
                   </div>
                 ))}
               </div>
            ) : (
-             <div className="text-slate-500 italic p-4 bg-slate-50 rounded-lg text-center">
+             <div className="text-slate-500 italic p-4 bg-slate-50 rounded-lg text-center dark:bg-slate-950 dark:text-slate-400">
                No specific recommendations generated.
              </div>
            )}
            
            {isPassing && onContinue && (
-            <div className="pt-6 mt-6 border-t border-slate-100 flex justify-end">
+            <div className="pt-6 mt-6 border-t border-slate-100 flex justify-end dark:border-slate-800">
               <Button 
                 onClick={onContinue} 
                 disabled={isReadOnly} // Disable if viewing history

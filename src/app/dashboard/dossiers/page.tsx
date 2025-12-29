@@ -96,12 +96,12 @@ export default function DossiersPage() {
   );
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-8">
+    <div className="p-6 max-w-7xl mx-auto space-y-8 dark:text-slate-100">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">My Dossiers</h1>
-          <p className="text-slate-500">Manage and track your security assessments</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">My Dossiers</h1>
+          <p className="text-slate-500 dark:text-slate-400">Manage and track your security assessments</p>
         </div>
         
         {/* Create Dossier Dialog - Only for AM */}
@@ -113,31 +113,31 @@ export default function DossiersPage() {
                 New Dossier
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden gap-0">
-              <DialogHeader className="p-6 pb-4 bg-slate-50/50 border-b border-slate-100">
-                <DialogTitle className="text-xl text-slate-900">Create New Assessment</DialogTitle>
-                <DialogDescription className="text-slate-500 mt-1.5">
+            <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden gap-0 dark:bg-slate-900 dark:border-slate-800">
+              <DialogHeader className="p-6 pb-4 bg-slate-50/50 border-b border-slate-100 dark:bg-slate-950/50 dark:border-slate-800">
+                <DialogTitle className="text-xl text-slate-900 dark:text-white">Create New Assessment</DialogTitle>
+                <DialogDescription className="text-slate-500 mt-1.5 dark:text-slate-400">
                   Start a new security assessment by selecting a template and assigning a Security Officer.
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleCreateDossier} className="p-6 space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="title" className="text-slate-700 font-medium">Dossier Title <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="title" className="text-slate-700 font-medium dark:text-slate-300">Dossier Title <span className="text-red-500">*</span></Label>
                   <Input
                     id="title"
                     placeholder="e.g., Q3 Payment Gateway Assessment"
                     value={newDossierTitle}
                     onChange={(e) => setNewDossierTitle(e.target.value)}
-                    className="h-11 border-slate-200 focus-visible:ring-blue-600"
+                    className="h-11 border-slate-200 focus-visible:ring-blue-600 dark:bg-slate-950 dark:border-slate-700 dark:text-white"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="template" className="text-slate-700 font-medium">Questionnaire Template <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="template" className="text-slate-700 font-medium dark:text-slate-300">Questionnaire Template <span className="text-red-500">*</span></Label>
                   <div className="relative">
                     <select
                       id="template"
-                      className="flex h-11 w-full appearance-none rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-slate-900"
+                      className="flex h-11 w-full appearance-none rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-slate-900 dark:bg-slate-950 dark:border-slate-700 dark:text-white"
                       value={selectedTemplate}
                       onChange={(e) => setSelectedTemplate(e.target.value)}
                     >
@@ -153,13 +153,13 @@ export default function DossiersPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="so" className="text-slate-700 font-medium">
+                  <Label htmlFor="so" className="text-slate-700 font-medium dark:text-slate-300">
                     Responsible Security Officer <span className="text-red-500">*</span>
                   </Label>
                   <div className="relative">
                     <select
                       id="so"
-                      className="flex h-11 w-full appearance-none rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-slate-900"
+                      className="flex h-11 w-full appearance-none rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-slate-900 dark:bg-slate-950 dark:border-slate-700 dark:text-white"
                       value={selectedSO}
                       onChange={(e) => setSelectedSO(e.target.value)}
                       required // HTML5 validation
@@ -173,7 +173,7 @@ export default function DossiersPage() {
                     </select>
                     <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" />
                   </div>
-                  <p className="text-xs text-slate-500">The selected officer will oversee this assessment.</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">The selected officer will oversee this assessment.</p>
                 </div>
 
                 <DialogFooter className="pt-2">
@@ -181,7 +181,7 @@ export default function DossiersPage() {
                     type="button" 
                     variant="outline" 
                     onClick={() => setIsCreateOpen(false)}
-                    className="mr-2 h-11 border-slate-200"
+                    className="mr-2 h-11 border-slate-200 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
                   >
                     Cancel
                   </Button>
@@ -201,17 +201,17 @@ export default function DossiersPage() {
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-4">
+      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-4 dark:bg-slate-900 dark:border-slate-800">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <Input 
             placeholder="Search dossiers..." 
-            className="pl-10 border-slate-200 bg-slate-50 focus:bg-white transition-colors"
+            className="pl-10 border-slate-200 bg-slate-50 focus:bg-white transition-colors dark:bg-slate-950 dark:border-slate-700 dark:text-white dark:focus:bg-slate-900"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Button variant="outline" className="text-slate-600 border-slate-200">
+        <Button variant="outline" className="text-slate-600 border-slate-200 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
           <Filter className="w-4 h-4 mr-2" />
           Filter
         </Button>
@@ -229,12 +229,12 @@ export default function DossiersPage() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-20 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
-          <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="text-center py-20 bg-slate-50 rounded-2xl border border-dashed border-slate-300 dark:bg-slate-900 dark:border-slate-700">
+          <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 dark:bg-slate-800">
             <Folder className="w-8 h-8 text-slate-400" />
           </div>
-          <h3 className="text-lg font-medium text-slate-900">No dossiers found</h3>
-          <p className="text-slate-500 mt-1">
+          <h3 className="text-lg font-medium text-slate-900 dark:text-white">No dossiers found</h3>
+          <p className="text-slate-500 mt-1 dark:text-slate-400">
             {searchQuery ? "Try adjusting your search terms" : (isAM ? "Get started by creating your first assessment" : "You have no assigned assessments yet")}
           </p>
         </div>

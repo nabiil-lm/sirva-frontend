@@ -67,7 +67,8 @@ export function ScoreGauge({ score, size = 200, strokeWidth = 20 }: ScoreGaugePr
         <path
           d={`M ${strokeWidth / 2},${size / 2} A ${radius},${radius} 0 0,1 ${size - strokeWidth / 2},${size / 2}`}
           fill="none"
-          stroke="#e2e8f0"
+          stroke="currentColor"
+          className="text-slate-200 dark:text-slate-800"
           strokeWidth={strokeWidth}
           strokeLinecap="round"
         />
@@ -90,7 +91,7 @@ export function ScoreGauge({ score, size = 200, strokeWidth = 20 }: ScoreGaugePr
         <span className={cn("text-5xl font-bold transition-colors duration-500", colorClass)}>
           {Math.round(displayScore)}
         </span>
-        <span className="text-sm font-medium text-slate-500 uppercase tracking-wider mt-1">
+        <span className="text-sm font-medium text-slate-500 uppercase tracking-wider mt-1 dark:text-slate-400">
           Secure Score
         </span>
       </div>

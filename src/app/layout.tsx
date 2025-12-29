@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="overscroll-none">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased dark:bg-slate-950 dark:text-slate-50`}
       >
         <AuthProvider>
           {children}

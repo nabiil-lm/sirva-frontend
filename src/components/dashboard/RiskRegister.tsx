@@ -292,22 +292,22 @@ export function RiskRegister({ dossier, userRole, currentUser, onUpdate }: RiskR
 
   const getLevelBadge = (level: string) => {
     const colors: Record<string, string> = {
-      LOW: "bg-blue-100 text-blue-800",
-      MEDIUM: "bg-yellow-100 text-yellow-800",
-      HIGH: "bg-orange-100 text-orange-800",
-      CRITICAL: "bg-red-100 text-red-800",
+      LOW: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+      MEDIUM: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
+      HIGH: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
+      CRITICAL: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
     };
-    return <Badge className={colors[level] || "bg-slate-100"}>{level}</Badge>;
+    return <Badge className={colors[level] || "bg-slate-100 dark:bg-slate-800"}>{level}</Badge>;
   };
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
-      PENDING: "bg-slate-100 text-slate-700 border-slate-200",
-      DELEGATED_PENDING: "bg-purple-50 text-purple-700 border-purple-200",
-      ACCEPTED: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      CONTESTED: "bg-amber-50 text-amber-700 border-amber-200",
-      REFUSED: "bg-red-50 text-red-700 border-red-200",
-      INVALIDATED: "bg-gray-100 text-gray-500 border-gray-200 line-through",
+      PENDING: "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700",
+      DELEGATED_PENDING: "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800",
+      ACCEPTED: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800",
+      CONTESTED: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800",
+      REFUSED: "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800",
+      INVALIDATED: "bg-gray-100 text-gray-500 border-gray-200 line-through dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700",
     };
     return (
       <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${styles[status] || styles.PENDING}`}>
@@ -326,15 +326,15 @@ export function RiskRegister({ dossier, userRole, currentUser, onUpdate }: RiskR
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             Risk Register
-            <Badge variant="outline" className="ml-2">
+            <Badge variant="outline" className="ml-2 dark:text-slate-300 dark:border-slate-700">
               {riskRegister.status.replace('_', ' ')}
             </Badge>
           </h2>
-          <p className="text-slate-500 mt-1">
+          <p className="text-slate-500 dark:text-slate-400 mt-1">
             {isDraft 
               ? "Draft mode: Define risks before publishing to the Application Manager." 
               : "Manage and mitigate identified security risks."}
@@ -362,10 +362,10 @@ export function RiskRegister({ dossier, userRole, currentUser, onUpdate }: RiskR
       {/* Risk List */}
       <div className="space-y-4">
         {riskRegister.items.length === 0 ? (
-          <div className="text-center py-16 bg-slate-50 rounded-xl border border-dashed border-slate-300">
-            <ShieldAlert className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <h3 className="text-lg font-medium text-slate-900">No risks identified</h3>
-            <p className="text-slate-500">
+          <div className="text-center py-16 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-300 dark:border-slate-700">
+            <ShieldAlert className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+            <h3 className="text-lg font-medium text-slate-900 dark:text-white">No risks identified</h3>
+            <p className="text-slate-500 dark:text-slate-400">
               {isSO && isDraft ? "Click 'Add Risk' to start populating the register." : "The risk register is currently empty."}
             </p>
           </div>
@@ -387,7 +387,7 @@ export function RiskRegister({ dossier, userRole, currentUser, onUpdate }: RiskR
             
             return (
               <Card key={item.id} className={cn(
-                "overflow-hidden transition-all border-l-4",
+                "overflow-hidden transition-all border-l-4 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100",
                 item.status === RiskItemStatus.ACCEPTED ? "border-l-emerald-500" : getBorderColor(item.level)
               )}>
                 <div className="p-6">
@@ -397,8 +397,8 @@ export function RiskRegister({ dossier, userRole, currentUser, onUpdate }: RiskR
                         {getLevelBadge(item.level)}
                         {getStatusBadge(item.status)}
                       </div>
-                      <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
-                      <p className="text-slate-600 text-sm">{item.description}</p>
+                      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{item.title}</h3>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm">{item.description}</p>
                     </div>
                     
                     {/* Actions Menu */}
@@ -460,9 +460,9 @@ export function RiskRegister({ dossier, userRole, currentUser, onUpdate }: RiskR
                   </div>
 
                   {/* Details Grid */}
-                  <div className="grid md:grid-cols-2 gap-6 mt-6 pt-6 border-t border-slate-100">
+                  <div className="grid md:grid-cols-2 gap-6 mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
                     <div>
-                      <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Risk Assessment</h4>
+                      <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Risk Assessment</h4>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="bg-slate-50 p-3 rounded-lg">
                           <span className="text-xs text-slate-500 block">Likelihood</span>
@@ -475,9 +475,9 @@ export function RiskRegister({ dossier, userRole, currentUser, onUpdate }: RiskR
                       </div>
                     </div>
                     <div>
-                      <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Mitigation Plan</h4>
-                      <p className="text-sm text-slate-700 bg-slate-50 p-3 rounded-lg min-h-[60px]">
-                        {item.mitigation || "No mitigation plan specified."}
+                      <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Mitigation Plan</h4>
+                      <p className="text-sm text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 p-3 rounded-lg min-h-[60px]">
+                        {item.mitigation}
                       </p>
                     </div>
                     
@@ -514,15 +514,15 @@ export function RiskRegister({ dossier, userRole, currentUser, onUpdate }: RiskR
       <Dialog open={isAddOpen || isEditOpen} onOpenChange={(open) => {
         if (!open) { setIsAddOpen(false); setIsEditOpen(false); resetForm(); }
       }}>
-        <DialogContent className="sm:max-w-[600px] p-0 gap-0 overflow-hidden">
-          <DialogHeader className="p-6 pb-4 bg-slate-50/50 border-b border-slate-100">
+        <DialogContent className="sm:max-w-[600px] p-0 gap-0 overflow-hidden dark:bg-slate-900 dark:border-slate-800">
+          <DialogHeader className="p-6 pb-4 bg-slate-50/50 dark:bg-slate-950/50 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-3 mb-1">
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+              <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
                 {isEditOpen ? <Edit className="w-5 h-5" /> : <ShieldAlert className="w-5 h-5" />}
               </div>
               <div>
-                <DialogTitle className="text-xl text-slate-900">{isEditOpen ? "Edit Risk" : "Add New Risk"}</DialogTitle>
-                <DialogDescription className="text-slate-500 mt-1">
+                <DialogTitle className="text-xl text-slate-900 dark:text-white">{isEditOpen ? "Edit Risk" : "Add New Risk"}</DialogTitle>
+                <DialogDescription className="text-slate-500 dark:text-slate-400 mt-1">
                   Define the risk parameters and mitigation strategy.
                 </DialogDescription>
               </div>
@@ -531,69 +531,69 @@ export function RiskRegister({ dossier, userRole, currentUser, onUpdate }: RiskR
           
           <div className="p-6 space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="title" className="text-slate-700 font-medium">Risk Title <span className="text-red-500">*</span></Label>
+              <Label htmlFor="title" className="text-slate-700 dark:text-slate-300 font-medium">Risk Title <span className="text-red-500">*</span></Label>
               <Input 
                 id="title" 
                 value={formData.title} 
                 onChange={(e) => handleFormChange('title', e.target.value)} 
                 placeholder="e.g. Unauthorized Access to DB" 
-                className="h-10"
+                className="h-10 dark:bg-slate-950 dark:border-slate-700 dark:text-white"
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="desc" className="text-slate-700 font-medium">Description</Label>
+              <Label htmlFor="desc" className="text-slate-700 dark:text-slate-300 font-medium">Description</Label>
               <Textarea 
                 id="desc" 
                 value={formData.description} 
                 onChange={(e) => handleFormChange('description', e.target.value)} 
                 placeholder="Detailed description of the risk..." 
-                className="min-h-[80px] resize-none"
+                className="min-h-[80px] resize-none dark:bg-slate-950 dark:border-slate-700 dark:text-white"
               />
             </div>
             
             <div className="grid grid-cols-2 gap-5">
               <div className="space-y-2">
-                <Label className="text-slate-700 font-medium">Likelihood</Label>
+                <Label className="text-slate-700 dark:text-slate-300 font-medium">Likelihood</Label>
                 <Select value={formData.likelihood} onValueChange={(val) => handleFormChange('likelihood', val)}>
-                  <SelectTrigger className="h-10"><SelectValue /></SelectTrigger>
-                  <SelectContent>
+                  <SelectTrigger className="h-10 dark:bg-slate-950 dark:border-slate-700 dark:text-white"><SelectValue /></SelectTrigger>
+                  <SelectContent className="dark:bg-slate-900 dark:border-slate-700">
                     {Object.keys(RiskLikelihood).map(k => <SelectItem key={k} value={k}>{k}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-slate-700 font-medium">Impact</Label>
+                <Label className="text-slate-700 dark:text-slate-300 font-medium">Impact</Label>
                 <Select value={formData.impact} onValueChange={(val) => handleFormChange('impact', val)}>
-                  <SelectTrigger className="h-10"><SelectValue /></SelectTrigger>
-                  <SelectContent>
+                  <SelectTrigger className="h-10 dark:bg-slate-950 dark:border-slate-700 dark:text-white"><SelectValue /></SelectTrigger>
+                  <SelectContent className="dark:bg-slate-900 dark:border-slate-700">
                     {Object.keys(RiskImpact).map(k => <SelectItem key={k} value={k}>{k}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
             </div>
             
-            <div className="bg-slate-50 rounded-lg p-4 border border-slate-100 flex items-center justify-between">
-              <span className="text-sm font-medium text-slate-600">Calculated Risk Level</span>
+            <div className="bg-slate-50 dark:bg-slate-950 rounded-lg p-4 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Calculated Risk Level</span>
               <div className="scale-110">
                 {getLevelBadge(formData.level)}
               </div>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="mitigation" className="text-slate-700 font-medium">Mitigation Plan</Label>
+              <Label htmlFor="mitigation" className="text-slate-700 dark:text-slate-300 font-medium">Mitigation Plan</Label>
               <Textarea 
                 id="mitigation" 
                 value={formData.mitigation} 
                 onChange={(e) => handleFormChange('mitigation', e.target.value)} 
                 placeholder="Steps to mitigate this risk..." 
-                className="min-h-[80px] resize-none"
+                className="min-h-[80px] resize-none dark:bg-slate-950 dark:border-slate-700 dark:text-white"
               />
             </div>
           </div>
           
-          <DialogFooter className="p-6 pt-2 bg-slate-50/30">
-            <Button variant="outline" onClick={() => { setIsAddOpen(false); setIsEditOpen(false); }} className="h-10">Cancel</Button>
+          <DialogFooter className="p-6 pt-2 bg-slate-50/30 dark:bg-slate-900/30">
+            <Button variant="outline" onClick={() => { setIsAddOpen(false); setIsEditOpen(false); }} className="h-10 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">Cancel</Button>
             <Button 
               onClick={isEditOpen ? handleEditRisk : handleAddRisk} 
               disabled={isSubmitting}
@@ -608,20 +608,20 @@ export function RiskRegister({ dossier, userRole, currentUser, onUpdate }: RiskR
 
       {/* Delete Confirmation */}
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-        <DialogContent className="sm:max-w-[400px]">
+        <DialogContent className="sm:max-w-[400px] dark:bg-slate-900 dark:border-slate-800">
           <DialogHeader>
-            <div className="mx-auto w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
-              <Trash2 className="w-6 h-6 text-red-600" />
+            <div className="mx-auto w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-4">
+              <Trash2 className="w-6 h-6 text-red-600 dark:text-red-400" />
             </div>
-            <DialogTitle className="text-center text-xl">Delete Risk</DialogTitle>
-            <DialogDescription className="text-center pt-2">
+            <DialogTitle className="text-center text-xl dark:text-white">Delete Risk</DialogTitle>
+            <DialogDescription className="text-center pt-2 dark:text-slate-400">
               Are you sure you want to delete this risk item?
               <br />
-              <span className="font-medium text-slate-900">This action cannot be undone.</span>
+              <span className="font-medium text-slate-900 dark:text-white">This action cannot be undone.</span>
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="sm:justify-center gap-2 mt-4">
-            <Button variant="outline" onClick={() => setIsDeleteOpen(false)} className="w-full sm:w-auto">Cancel</Button>
+            <Button variant="outline" onClick={() => setIsDeleteOpen(false)} className="w-full sm:w-auto dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">Cancel</Button>
             <Button variant="destructive" onClick={handleDeleteRisk} disabled={isSubmitting} className="w-full sm:w-auto">Delete</Button>
           </DialogFooter>
         </DialogContent>
@@ -629,20 +629,20 @@ export function RiskRegister({ dossier, userRole, currentUser, onUpdate }: RiskR
 
       {/* Publish Confirmation */}
       <Dialog open={isPublishOpen} onOpenChange={setIsPublishOpen}>
-        <DialogContent className="sm:max-w-[450px]">
+        <DialogContent className="sm:max-w-[450px] dark:bg-slate-900 dark:border-slate-800">
           <DialogHeader>
-            <div className="mx-auto w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mb-4">
-              <Send className="w-6 h-6 text-emerald-600" />
+            <div className="mx-auto w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-4">
+              <Send className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <DialogTitle className="text-center text-xl">Publish Risk Register</DialogTitle>
-            <DialogDescription className="text-center pt-2">
+            <DialogTitle className="text-center text-xl dark:text-white">Publish Risk Register</DialogTitle>
+            <DialogDescription className="text-center pt-2 dark:text-slate-400">
               Are you sure you want to publish this register? 
               <br/><br/>
-              The Application Manager will be notified and can start reviewing the risks. <span className="font-medium text-slate-900">You will no longer be able to add or remove risks.</span>
+              The Application Manager will be notified and can start reviewing the risks. <span className="font-medium text-slate-900 dark:text-white">You will no longer be able to add or remove risks.</span>
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="sm:justify-center gap-2 mt-4">
-            <Button variant="outline" onClick={() => setIsPublishOpen(false)} className="w-full sm:w-auto">Cancel</Button>
+            <Button variant="outline" onClick={() => setIsPublishOpen(false)} className="w-full sm:w-auto dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">Cancel</Button>
             <Button className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white" onClick={handlePublishRegister} disabled={isSubmitting}>
               {isSubmitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
               Publish Register
@@ -653,15 +653,15 @@ export function RiskRegister({ dossier, userRole, currentUser, onUpdate }: RiskR
 
       {/* Delegate Dialog */}
       <Dialog open={isDelegateOpen} onOpenChange={setIsDelegateOpen}>
-        <DialogContent className="sm:max-w-[500px] p-0 gap-0 overflow-hidden">
-          <DialogHeader className="p-6 pb-4 bg-blue-50/50 border-b border-blue-100">
+        <DialogContent className="sm:max-w-[500px] p-0 gap-0 overflow-hidden dark:bg-slate-900 dark:border-slate-800">
+          <DialogHeader className="p-6 pb-4 bg-blue-50/50 dark:bg-blue-950/20 border-b border-blue-100 dark:border-blue-900">
             <div className="flex items-center gap-3 mb-1">
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+              <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-400">
                 <UserPlus className="w-5 h-5" />
               </div>
               <div>
-                <DialogTitle className="text-xl text-slate-900">Delegate Risk</DialogTitle>
-                <DialogDescription className="text-slate-500 mt-1">
+                <DialogTitle className="text-xl text-slate-900 dark:text-white">Delegate Risk</DialogTitle>
+                <DialogDescription className="text-slate-500 dark:text-slate-400 mt-1">
                   Assign this risk to another user for acceptance.
                 </DialogDescription>
               </div>
@@ -669,29 +669,29 @@ export function RiskRegister({ dossier, userRole, currentUser, onUpdate }: RiskR
           </DialogHeader>
           
           <div className="p-6 space-y-4">
-            <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 mb-2">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Risk Item</span>
-              <p className="font-medium text-slate-900 truncate">{selectedRisk?.title}</p>
+            <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-lg border border-slate-100 dark:border-slate-800 mb-2">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Risk Item</span>
+              <p className="font-medium text-slate-900 dark:text-white truncate">{selectedRisk?.title}</p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="delegate-email" className="text-slate-700 font-medium">Assignee Email</Label>
+              <Label htmlFor="delegate-email" className="text-slate-700 dark:text-slate-300 font-medium">Assignee Email</Label>
               <Input 
                 id="delegate-email"
                 placeholder="colleague@example.com" 
                 value={selectedDelegate} 
                 onChange={(e) => setSelectedDelegate(e.target.value)} 
-                className="h-10"
+                className="h-10 dark:bg-slate-950 dark:border-slate-700 dark:text-white"
               />
-              <p className="text-xs text-slate-500 flex items-center gap-1">
+              <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
                 <HelpCircle className="w-3 h-3" />
                 The user will be notified and must accept or refuse this risk.
               </p>
             </div>
           </div>
           
-          <DialogFooter className="p-6 pt-2 bg-slate-50/30">
-            <Button variant="outline" onClick={() => setIsDelegateOpen(false)} className="h-10">Cancel</Button>
+          <DialogFooter className="p-6 pt-2 bg-slate-50/30 dark:bg-slate-900/30">
+            <Button variant="outline" onClick={() => setIsDelegateOpen(false)} className="h-10 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">Cancel</Button>
             <Button onClick={handleDelegateRisk} className="h-10 bg-blue-600 hover:bg-blue-700 text-white">
               <Share2 className="w-4 h-4 mr-2" />
               Delegate Risk
@@ -702,15 +702,15 @@ export function RiskRegister({ dossier, userRole, currentUser, onUpdate }: RiskR
 
       {/* Contest Dialog */}
       <Dialog open={isContestOpen} onOpenChange={setIsContestOpen}>
-        <DialogContent className="sm:max-w-[500px] p-0 gap-0 overflow-hidden">
-          <DialogHeader className="p-6 pb-4 bg-amber-50/50 border-b border-amber-100">
+        <DialogContent className="sm:max-w-[500px] p-0 gap-0 overflow-hidden dark:bg-slate-900 dark:border-slate-800">
+          <DialogHeader className="p-6 pb-4 bg-amber-50/50 dark:bg-amber-950/20 border-b border-amber-100 dark:border-amber-900">
             <div className="flex items-center gap-3 mb-1">
-              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+              <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center text-amber-600 dark:text-amber-400">
                 <AlertTriangle className="w-5 h-5" />
               </div>
               <div>
-                <DialogTitle className="text-xl text-slate-900">Contest Risk</DialogTitle>
-                <DialogDescription className="text-slate-500 mt-1">
+                <DialogTitle className="text-xl text-slate-900 dark:text-white">Contest Risk</DialogTitle>
+                <DialogDescription className="text-slate-500 dark:text-slate-400 mt-1">
                   Explain why you believe this risk is invalid or incorrect.
                 </DialogDescription>
               </div>
@@ -718,28 +718,28 @@ export function RiskRegister({ dossier, userRole, currentUser, onUpdate }: RiskR
           </DialogHeader>
           
           <div className="p-6 space-y-4">
-            <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 mb-2">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Contesting Risk</span>
-              <p className="font-medium text-slate-900 truncate">{selectedRisk?.title}</p>
+            <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-lg border border-slate-100 dark:border-slate-800 mb-2">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Contesting Risk</span>
+              <p className="font-medium text-slate-900 dark:text-white truncate">{selectedRisk?.title}</p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="contest-reason" className="text-slate-700 font-medium">Reason for Contestation <span className="text-red-500">*</span></Label>
+              <Label htmlFor="contest-reason" className="text-slate-700 dark:text-slate-300 font-medium">Reason for Contestation <span className="text-red-500">*</span></Label>
               <Textarea 
                 id="contest-reason"
                 value={contestReason} 
                 onChange={(e) => setContestReason(e.target.value)} 
                 placeholder="I believe this risk is invalid because..." 
-                className="min-h-[120px] resize-none focus:ring-amber-500 focus:border-amber-500"
+                className="min-h-[120px] resize-none focus:ring-amber-500 focus:border-amber-500 dark:bg-slate-950 dark:border-slate-700 dark:text-white"
               />
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 This will be sent to the Security Officer for review.
               </p>
             </div>
           </div>
           
-          <DialogFooter className="p-6 pt-2 bg-slate-50/30">
-            <Button variant="outline" onClick={() => setIsContestOpen(false)} className="h-10">Cancel</Button>
+          <DialogFooter className="p-6 pt-2 bg-slate-50/30 dark:bg-slate-900/30">
+            <Button variant="outline" onClick={() => setIsContestOpen(false)} className="h-10 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">Cancel</Button>
             <Button onClick={handleContestRisk} className="h-10 bg-amber-600 hover:bg-amber-700 text-white border-amber-600">
               Submit Contestation
             </Button>
@@ -749,35 +749,35 @@ export function RiskRegister({ dossier, userRole, currentUser, onUpdate }: RiskR
 
       {/* SO Review Dialog */}
       <Dialog open={isSoReviewOpen} onOpenChange={setIsSoReviewOpen}>
-        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden gap-0">
-          <div className="bg-purple-50 p-6 border-b border-purple-100 flex flex-col items-center text-center">
-            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-3">
-              <Gavel className="w-6 h-6 text-purple-600" />
+        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden gap-0 dark:bg-slate-900 dark:border-slate-800">
+          <div className="bg-purple-50 dark:bg-purple-950/20 p-6 border-b border-purple-100 dark:border-purple-900 flex flex-col items-center text-center">
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/40 rounded-full flex items-center justify-center mb-3">
+              <Gavel className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             </div>
-            <DialogTitle className="text-xl text-purple-900">Review Contestation</DialogTitle>
-            <DialogDescription className="text-purple-700 mt-1">
-              Reviewing contestation for: <span className="font-medium text-purple-900">{selectedRisk?.title}</span>
+            <DialogTitle className="text-xl text-purple-900 dark:text-purple-100">Review Contestation</DialogTitle>
+            <DialogDescription className="text-purple-700 dark:text-purple-300 mt-1">
+              Reviewing contestation for: <span className="font-medium text-purple-900 dark:text-purple-100">{selectedRisk?.title}</span>
             </DialogDescription>
           </div>
           
           <div className="p-6 space-y-4">
-            <div className="bg-amber-50 border border-amber-100 p-4 rounded-lg">
-              <h4 className="text-sm font-semibold text-amber-900 mb-1">Contestation Reason:</h4>
-              <p className="text-sm text-amber-800 italic">&quot;{selectedRisk?.contestation_reason || selectedRisk?.contest_reason}&quot;</p>
+            <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900 p-4 rounded-lg">
+              <h4 className="text-sm font-semibold text-amber-900 dark:text-amber-200 mb-1">Contestation Reason:</h4>
+              <p className="text-sm text-amber-800 dark:text-amber-300 italic">&quot;{selectedRisk?.contestation_reason || selectedRisk?.contest_reason}&quot;</p>
             </div>
             
-            <div className="text-sm text-slate-600 space-y-2">
+            <div className="text-sm text-slate-600 dark:text-slate-400 space-y-2">
               <p><strong>Accept Contestation:</strong> The risk will be marked as INVALIDATED and removed from the active risk list.</p>
               <p><strong>Refuse Contestation:</strong> The risk will be returned to the AM, who must then accept or delegate it. They cannot contest it again.</p>
             </div>
           </div>
 
-          <DialogFooter className="p-6 pt-2 bg-slate-50/50 flex gap-2 sm:justify-between">
-            <Button variant="outline" onClick={() => setIsSoReviewOpen(false)}>Cancel</Button>
+          <DialogFooter className="p-6 pt-2 bg-slate-50/50 dark:bg-slate-900/50 flex gap-2 sm:justify-between">
+            <Button variant="outline" onClick={() => setIsSoReviewOpen(false)} className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">Cancel</Button>
             <div className="flex gap-2">
               <Button 
                 variant="outline" 
-                className="border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
+                className="border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/30"
                 onClick={() => handleSoReview('refuse')}
               >
                 Refuse (Return to AM)

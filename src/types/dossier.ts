@@ -85,9 +85,11 @@ export interface Dossier {
   status: string;
   status_display: string;
   am: User;
+  responsible_so_details?: User; // NEW: SO user details
   questionnaire_template: number | null;
   questionnaire_template_name: string | null;
   is_submitted: boolean;
+  architecture_docs_submitted?: boolean;  // ADD THIS LINE
   created_at: string;
   updated_at: string;
   ia1_result?: IaResult; // Add this field
