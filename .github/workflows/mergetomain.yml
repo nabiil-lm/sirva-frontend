@@ -25,14 +25,14 @@ jobs:
       # 3. Exécution de la fusion
       - name: Fusionner Dev dans main
         run: |
-          # Bascule sur la branche de destination (master)
+          # Bascule sur la branche de destination (main)
           git checkout main
           
-          # On s'assure d'avoir la dernière version de master avant de commencer
+          # On s'assure d'avoir la dernière version de main avant de commencer
           git pull origin main
           
           # On fusionne la branche dev
-          echo "Fusion de origin/dev vers master..."
+          echo "Fusion de origin/dev vers main..."
           git merge origin/dev --no-edit
           
           # On pousse le résultat
