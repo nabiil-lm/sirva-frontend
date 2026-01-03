@@ -23,7 +23,7 @@ jobs:
           git config --global user.email 'actions@github.com'
 
       # 3. Exécution de la fusion
-      - name: Fusionner Dev dans Master
+      - name: Fusionner Dev dans main
         run: |
           # Bascule sur la branche de destination (master)
           git checkout main
