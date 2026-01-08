@@ -25,4 +25,5 @@ jobs:
             # 2. Lancer Django Server
             # ATTENTION : J'utilise 'nohup' et '&' pour lancer ça en arrière-plan.
             # Sans ça, GitHub Actions restera bloqué à tourner à l'infini car le serveur ne rend jamais la main.
+            npm install
             npm run dev -- -p 3000 > /dev/null 2>&1 &
