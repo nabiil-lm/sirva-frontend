@@ -65,7 +65,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen flex bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 transition-colors duration-300">
       {/* Left Side - Form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 sm:px-12 py-12 lg:py-0">
         <div className="w-full max-w-md mx-auto">
@@ -74,27 +74,27 @@ export default function LoginPage() {
             <div className="p-2.5 rounded-lg bg-gradient-to-br from-blue-600 to-blue-700 group-hover:shadow-lg transition-shadow">
               <Shield className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-slate-900">SIRVA</span>
+            <span className="text-2xl font-bold text-slate-900 dark:text-white">SIRVA</span>
           </Link>
 
           {/* Heading */}
           <div className="mb-8">
-            <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-2">
+            <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-2">
               Welcome Back
             </h1>
-            <p className="text-slate-600">
+            <p className="text-slate-600 dark:text-slate-400">
               Sign in to your account to continue with your security assessments.
             </p>
           </div>
 
           {/* Form Card */}
-          <Card className="p-8 border-slate-200 shadow-lg">
+          <Card className="p-8 border-slate-200 shadow-lg dark:bg-slate-900 dark:border-slate-800">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Email */}
               <div className="space-y-2">
                 <Label
                   htmlFor="email"
-                  className="text-slate-700 font-medium text-sm"
+                  className="text-slate-700 font-medium text-sm dark:text-slate-300"
                 >
                   Email Address
                 </Label>
@@ -104,7 +104,7 @@ export default function LoginPage() {
                   placeholder="you@example.com"
                   disabled={authLoading}
                   {...register("email")}
-                  className={`h-11 ${
+                  className={`h-11 dark:bg-slate-950 dark:border-slate-700 dark:text-white ${
                     errors.email ? "border-red-500 focus:ring-red-500" : ""
                   }`}
                 />
@@ -118,13 +118,13 @@ export default function LoginPage() {
                 <div className="flex items-center justify-between">
                   <Label
                     htmlFor="password"
-                    className="text-slate-700 font-medium text-sm"
+                    className="text-slate-700 font-medium text-sm dark:text-slate-300"
                   >
                     Password
                   </Label>
                   <Link
                     href="/auth/forgot-password"
-                    className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
+                    className="text-sm text-blue-600 hover:text-blue-700 transition-colors dark:text-blue-400 dark:hover:text-blue-300"
                   >
                     Forgot?
                   </Link>
@@ -136,7 +136,7 @@ export default function LoginPage() {
                     placeholder="Enter your password"
                     disabled={authLoading}
                     {...register("password")}
-                    className={`h-11 pr-10 ${
+                    className={`h-11 pr-10 dark:bg-slate-950 dark:border-slate-700 dark:text-white ${
                       errors.password
                         ? "border-red-500 focus:ring-red-500"
                         : ""
@@ -145,7 +145,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 transition-colors dark:text-slate-400 dark:hover:text-slate-300"
                   >
                     {showPassword ? (
                       <EyeOff className="w-4 h-4" />
@@ -167,11 +167,11 @@ export default function LoginPage() {
                   id="rememberMe"
                   type="checkbox"
                   {...register("rememberMe")}
-                  className="w-4 h-4 rounded border-slate-300 text-blue-600 cursor-pointer"
+                  className="w-4 h-4 rounded border-slate-300 text-blue-600 cursor-pointer dark:border-slate-600 dark:bg-slate-950 dark:checked:bg-blue-600"
                 />
                 <label
                   htmlFor="rememberMe"
-                  className="text-sm text-slate-600 cursor-pointer"
+                  className="text-sm text-slate-600 cursor-pointer dark:text-slate-400"
                 >
                   Remember me
                 </label>
@@ -197,10 +197,10 @@ export default function LoginPage() {
             {/* Divider */}
             <div className="relative my-8">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200"></div>
+                <div className="w-full border-t border-slate-200 dark:border-slate-700"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-slate-500">
+                <span className="px-2 bg-white text-slate-500 dark:bg-slate-900 dark:text-slate-400">
                   New to SIRVA?
                 </span>
               </div>
@@ -210,25 +210,25 @@ export default function LoginPage() {
             <Button
               asChild
               variant="outline"
-              className="w-full h-11 border-slate-300 hover:bg-slate-50"
+              className="w-full h-11 border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800 dark:text-white dark:hover:text-white"
             >
               <Link href="/auth/signup">Create an Account</Link>
             </Button>
           </Card>
 
           {/* Footer Links */}
-          <p className="text-center text-sm text-slate-600 mt-8">
+          <p className="text-center text-sm text-slate-600 mt-8 dark:text-slate-500">
             By signing in, you agree to our{" "}
             <Link
               href="#"
-              className="text-blue-600 hover:text-blue-700 transition-colors"
+              className="text-blue-600 hover:text-blue-700 transition-colors dark:text-blue-400 dark:hover:text-blue-300"
             >
               Terms of Service
             </Link>{" "}
             and{" "}
             <Link
               href="#"
-              className="text-blue-600 hover:text-blue-700 transition-colors"
+              className="text-blue-600 hover:text-blue-700 transition-colors dark:text-blue-400 dark:hover:text-blue-300"
             >
               Privacy Policy
             </Link>

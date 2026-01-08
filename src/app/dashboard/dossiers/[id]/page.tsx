@@ -276,21 +276,21 @@ export default function DossierDetailPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-20">
+    <div className="min-h-screen bg-slate-50/50 pb-20 dark:bg-slate-950">
       {/* Top Navigation Bar */}
-      <div className="sticky top-0 z-10 border-b border-slate-200 bg-white px-6 py-4 shadow-sm">
+      <div className="sticky top-0 z-10 border-b border-slate-200 bg-white px-6 py-4 shadow-sm dark:bg-slate-900 dark:border-slate-800">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => router.back()}>
-              <ArrowLeft className="h-5 w-5 text-slate-500" />
+              <ArrowLeft className="h-5 w-5 text-slate-500 dark:text-slate-400" />
             </Button>
             <div>
-              <h1 className="text-lg font-semibold text-slate-900">{dossier.title}</h1>
-              <div className="flex items-center gap-2 text-sm text-slate-500">
+              <h1 className="text-lg font-semibold text-slate-900 dark:text-white">{dossier.title}</h1>
+              <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
                 <FileText className="h-3.5 w-3.5" />
                 <span>{dossier.questionnaire_template_name || "Untitled Template"}</span>
-                <span className="text-slate-300">•</span>
-                <span className={`font-medium ${isReadOnly ? 'text-emerald-600' : 'text-blue-600'}`}>
+                <span className="text-slate-300 dark:text-slate-600">•</span>
+                <span className={`font-medium ${isReadOnly ? 'text-emerald-600 dark:text-emerald-400' : 'text-blue-600 dark:text-blue-400'}`}>
                   {dossier.status_display || dossier.status}
                 </span>
               </div>
@@ -347,7 +347,7 @@ export default function DossierDetailPage() {
           {/* Left Sidebar Navigation */}
           <div className="col-span-12 lg:col-span-3 space-y-2">
             <div className="sticky top-24 space-y-2">
-              <h3 className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+              <h3 className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 dark:text-slate-400">
                 Dossier Stages
               </h3>
               {navItems.map((item) => (
@@ -358,14 +358,14 @@ export default function DossierDetailPage() {
                   className={cn(
                     "w-full flex items-start gap-3 p-3 rounded-lg text-left transition-all",
                     activeTab === item.id 
-                      ? "bg-blue-50 text-blue-700 border border-blue-100 shadow-sm" 
-                      : "hover:bg-slate-100 text-slate-600",
+                      ? "bg-blue-50 text-blue-700 border border-blue-100 shadow-sm dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800" 
+                      : "hover:bg-slate-100 text-slate-600 dark:hover:bg-slate-800 dark:text-slate-400",
                     !item.enabled && "opacity-50 cursor-not-allowed hover:bg-transparent"
                   )}
                 >
                   <div className={cn(
                     "mt-0.5 p-1.5 rounded-md",
-                    activeTab === item.id ? "bg-blue-100 text-blue-600" : "bg-slate-100 text-slate-500"
+                    activeTab === item.id ? "bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400" : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
                   )}>
                     <item.icon className="w-4 h-4" />
                   </div>
@@ -375,7 +375,7 @@ export default function DossierDetailPage() {
                   </div>
                   {activeTab === item.id && (
                     <div className="ml-auto self-center">
-                      <div className="w-1.5 h-1.5 rounded-full bg-blue-600"></div>
+                      <div className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-500"></div>
                     </div>
                   )}
                 </button>
@@ -390,9 +390,9 @@ export default function DossierDetailPage() {
             {activeTab === 'questionnaire' && (
               <div className="space-y-6 animate-in fade-in duration-300">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold text-slate-900">Security Questionnaire</h2>
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">Security Questionnaire</h2>
                   {isReadOnly && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-medium">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-medium dark:bg-emerald-900/30 dark:text-emerald-400">
                       {isSO ? (
                         <>
                           <Lock className="w-3.5 h-3.5" />
@@ -411,22 +411,22 @@ export default function DossierDetailPage() {
                 {questions.map((q, index) => (
                   <div 
                     key={q.id} 
-                    className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-md"
+                    className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:bg-slate-900 dark:border-slate-800"
                   >
                     {/* Question Header */}
                     <div className="mb-4 flex items-start gap-4">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-sm font-semibold text-slate-600">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-sm font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                         {index + 1}
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <h3 className="text-base font-medium text-slate-900">{q.text}</h3>
+                          <h3 className="text-base font-medium text-slate-900 dark:text-white">{q.text}</h3>
                           {q.is_mandatory && (
                             <span className="text-xs font-medium text-red-500">*Required</span>
                           )}
                         </div>
                         {q.help_text && (
-                          <p className="mt-1 text-sm text-slate-500">{q.help_text}</p>
+                          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{q.help_text}</p>
                         )}
                       </div>
                     </div>
@@ -439,10 +439,10 @@ export default function DossierDetailPage() {
                           {['True', 'False'].map((option) => (
                             <label key={option} className={cn(
                               "flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 transition-colors",
-                              isReadOnly ? "cursor-default" : "hover:bg-slate-50",
+                              isReadOnly ? "cursor-default" : "hover:bg-slate-50 dark:hover:bg-slate-800",
                               answers[q.id] === option.toLowerCase() 
-                                ? "border-blue-600 bg-blue-50" 
-                                : "border-slate-200"
+                                ? "border-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500" 
+                                : "border-slate-200 dark:border-slate-700"
                             )}>
                               <input
                                 type="radio"
@@ -451,9 +451,9 @@ export default function DossierDetailPage() {
                                 checked={answers[q.id] === option.toLowerCase()}
                                 onChange={(e) => !isReadOnly && handleAnswerChange(q.id, e.target.value)}
                                 disabled={isReadOnly}
-                                className="h-4 w-4 border-slate-300 text-blue-600 focus:ring-blue-600"
+                                className="h-4 w-4 border-slate-300 text-blue-600 focus:ring-blue-600 dark:border-slate-600 dark:bg-slate-800"
                               />
-                              <span className="text-sm font-medium text-slate-700">{option}</span>
+                              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{option}</span>
                             </label>
                           ))}
                         </div>
@@ -465,10 +465,10 @@ export default function DossierDetailPage() {
                           {q.choices_json.map((choice) => (
                             <label key={choice} className={cn(
                               "flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 transition-colors",
-                              isReadOnly ? "cursor-default" : "hover:bg-slate-50",
+                              isReadOnly ? "cursor-default" : "hover:bg-slate-50 dark:hover:bg-slate-800",
                               answers[q.id] === choice 
-                                ? "border-blue-600 bg-blue-50" 
-                                : "border-slate-200"
+                                ? "border-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500" 
+                                : "border-slate-200 dark:border-slate-700"
                             )}>
                               <input
                                 type="radio"
@@ -477,9 +477,9 @@ export default function DossierDetailPage() {
                                 checked={answers[q.id] === choice}
                                 onChange={(e) => !isReadOnly && handleAnswerChange(q.id, e.target.value)}
                                 disabled={isReadOnly}
-                                className="h-4 w-4 border-slate-300 text-blue-600 focus:ring-blue-600"
+                                className="h-4 w-4 border-slate-300 text-blue-600 focus:ring-blue-600 dark:border-slate-600 dark:bg-slate-800"
                               />
-                              <span className="text-sm text-slate-700">{choice}</span>
+                              <span className="text-sm text-slate-700 dark:text-slate-300">{choice}</span>
                             </label>
                           ))}
                         </div>
@@ -493,10 +493,10 @@ export default function DossierDetailPage() {
                             return (
                               <label key={choice} className={cn(
                                 "flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 transition-colors",
-                                isReadOnly ? "cursor-default" : "hover:bg-slate-50",
+                                isReadOnly ? "cursor-default" : "hover:bg-slate-50 dark:hover:bg-slate-800",
                                 isChecked 
-                                  ? "border-blue-600 bg-blue-50" 
-                                  : "border-slate-200"
+                                  ? "border-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500" 
+                                  : "border-slate-200 dark:border-slate-700"
                               )}>
                                 <input
                                   type="checkbox"
@@ -504,9 +504,9 @@ export default function DossierDetailPage() {
                                   checked={isChecked}
                                   onChange={(e) => !isReadOnly && handleMultiChoiceChange(q.id, choice, e.target.checked)}
                                   disabled={isReadOnly}
-                                  className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600"
+                                  className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600 dark:border-slate-600 dark:bg-slate-800"
                                 />
-                                <span className="text-sm text-slate-700">{choice}</span>
+                                <span className="text-sm text-slate-700 dark:text-slate-300">{choice}</span>
                               </label>
                             );
                           })}
@@ -520,7 +520,7 @@ export default function DossierDetailPage() {
                           value={answers[q.id] || ''}
                           onChange={(e) => handleAnswerChange(q.id, e.target.value)}
                           disabled={isReadOnly}
-                          className="min-h-[120px] resize-y border-slate-200 focus:border-blue-600 focus:ring-blue-600 disabled:bg-slate-50 disabled:text-slate-600"
+                          className="min-h-[120px] resize-y border-slate-200 focus:border-blue-600 focus:ring-blue-600 disabled:bg-slate-50 disabled:text-slate-600 dark:bg-slate-950 dark:border-slate-700 dark:text-white dark:disabled:bg-slate-900 dark:disabled:text-slate-500"
                         />
                       )}
                     </div>
@@ -528,10 +528,10 @@ export default function DossierDetailPage() {
                 ))}
 
                 {questions.length === 0 && (
-                  <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 py-16 text-center">
+                  <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 py-16 text-center dark:bg-slate-900 dark:border-slate-800">
                     <HelpCircle className="mb-4 h-10 w-10 text-slate-400" />
-                    <h3 className="text-lg font-medium text-slate-900">No questions found</h3>
-                    <p className="text-slate-500">This template doesn&apos;t have any questions yet.</p>
+                    <h3 className="text-lg font-medium text-slate-900 dark:text-white">No questions found</h3>
+                    <p className="text-slate-500 dark:text-slate-400">This template doesn&apos;t have any questions yet.</p>
                   </div>
                 )}
               </div>
@@ -582,12 +582,12 @@ export default function DossierDetailPage() {
                   onUpdate={fetchDossierData}
                 />
               ) : (
-                <div className="flex flex-col items-center justify-center py-16 bg-white rounded-xl border border-dashed border-slate-300 shadow-sm">
-                  <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-                    <Lock className="w-8 h-8 text-slate-300" />
+                <div className="flex flex-col items-center justify-center py-16 bg-white rounded-xl border border-dashed border-slate-300 shadow-sm dark:bg-slate-900 dark:border-slate-800">
+                  <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 dark:bg-slate-800">
+                    <Lock className="w-8 h-8 text-slate-300 dark:text-slate-500" />
                   </div>
-                  <h3 className="text-lg font-medium text-slate-900">Risk Register Not Initialized</h3>
-                  <p className="text-slate-500 max-w-md text-center mt-2">
+                  <h3 className="text-lg font-medium text-slate-900 dark:text-white">Risk Register Not Initialized</h3>
+                  <p className="text-slate-500 max-w-md text-center mt-2 dark:text-slate-400">
                     The risk register has not been created yet. 
                     {isSO ? " Please initialize it using the button above to start identifying risks." : " Waiting for the Security Officer to initialize it."}
                   </p>
@@ -601,16 +601,16 @@ export default function DossierDetailPage() {
 
       {/* Confirmation Dialog for Submission */}
       <Dialog open={isSubmitConfirmOpen} onOpenChange={setIsSubmitConfirmOpen}>
-        <DialogContent className="sm:max-w-[450px]">
+        <DialogContent className="sm:max-w-[450px] dark:bg-slate-900 dark:border-slate-800">
           <DialogHeader>
-            <div className="mx-auto w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mb-4">
-              <AlertTriangle className="w-6 h-6 text-amber-600" />
+            <div className="mx-auto w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mb-4 dark:bg-amber-900/30">
+              <AlertTriangle className="w-6 h-6 text-amber-600 dark:text-amber-500" />
             </div>
-            <DialogTitle className="text-center text-xl">Confirm Submission</DialogTitle>
-            <DialogDescription className="text-center pt-2">
+            <DialogTitle className="text-center text-xl dark:text-white">Confirm Submission</DialogTitle>
+            <DialogDescription className="text-center pt-2 dark:text-slate-400">
               Are you sure you want to submit this assessment?
               <br /><br />
-              <span className="font-medium text-slate-900">This action cannot be undone.</span>
+              <span className="font-medium text-slate-900 dark:text-white">This action cannot be undone.</span>
               <br />
               Once submitted, you will no longer be able to edit your answers, and the IA1 analysis will begin immediately.
             </DialogDescription>
@@ -619,7 +619,7 @@ export default function DossierDetailPage() {
             <Button
               variant="outline"
               onClick={() => setIsSubmitConfirmOpen(false)}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               Cancel
             </Button>
@@ -635,13 +635,13 @@ export default function DossierDetailPage() {
 
       {/* Confirmation Dialog for Validation */}
       <Dialog open={isValidationConfirmOpen} onOpenChange={setIsValidationConfirmOpen}>
-        <DialogContent className="sm:max-w-[450px]">
+        <DialogContent className="sm:max-w-[450px] dark:bg-slate-900 dark:border-slate-800">
           <DialogHeader>
-            <div className="mx-auto w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mb-4">
-              <ShieldCheck className="w-6 h-6 text-emerald-600" />
+            <div className="mx-auto w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mb-4 dark:bg-emerald-900/30">
+              <ShieldCheck className="w-6 h-6 text-emerald-600 dark:text-emerald-500" />
             </div>
-            <DialogTitle className="text-center text-xl">Confirm Final Validation</DialogTitle>
-            <DialogDescription className="text-center pt-2">
+            <DialogTitle className="text-center text-xl dark:text-white">Confirm Final Validation</DialogTitle>
+            <DialogDescription className="text-center pt-2 dark:text-slate-400">
               Are you sure you want to validate this dossier?
               <br /><br />
               This will mark the assessment as <strong>VALIDATED</strong> and complete the process.
@@ -651,7 +651,7 @@ export default function DossierDetailPage() {
             <Button
               variant="outline"
               onClick={() => setIsValidationConfirmOpen(false)}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               Cancel
             </Button>
