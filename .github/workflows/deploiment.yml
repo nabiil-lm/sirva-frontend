@@ -14,7 +14,7 @@ jobs:
         with:
           host: 48.220.33.123
           username: Antonio
-          password: 'DvpSecuWeb123'  # Votre mot de passe
+          password: 'DvpSecuWeb123'  
           port: 22
           script: |
             # 1. Se rendre dans le dossier
@@ -27,3 +27,4 @@ jobs:
             # Sans ça, GitHub Actions restera bloqué à tourner à l'infini car le serveur ne rend jamais la main.
             npm install
             npm run dev -- -p 3000 > /dev/null 2>&1 &
+            
