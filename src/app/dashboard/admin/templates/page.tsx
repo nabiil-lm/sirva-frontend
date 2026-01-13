@@ -2,10 +2,18 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, FileText, Edit, Trash2, Loader2 } from "lucide-react";
+import { Plus, FileText, Edit, Trash2, Loader2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,6 +34,11 @@ export default function TemplatesPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newTemplate, setNewTemplate] = useState({ name: "", description: "" });
   const [isCreating, setIsCreating] = useState(false);
+
+  // Delete confirmation state
+  const [deletingTemplate, setDeletingTemplate] = useState<QuestionnaireTemplate | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchTemplates();
@@ -66,15 +79,26 @@ export default function TemplatesPage() {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure? This cannot be undone.")) return;
+  const handleDeleteClick = (template: QuestionnaireTemplate) => {
+    setDeletingTemplate(template);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deletingTemplate) return;
+    
+    setIsDeleting(true);
     try {
-      await apiClient.delete(`/questionnaires/${id}/`);
+      await apiClient.delete(`/questionnaires/${deletingTemplate.id}/`);
       toast.success("Template deleted");
+      setIsDeleteDialogOpen(false);
+      setDeletingTemplate(null);
       fetchTemplates();
     } catch (error) {
       console.error("Failed to delete template", error);
       toast.error("Failed to delete template");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -211,7 +235,7 @@ export default function TemplatesPage() {
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    onClick={() => handleDelete(template.id)} 
+                    onClick={() => handleDeleteClick(template)} 
                     className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -232,6 +256,98 @@ export default function TemplatesPage() {
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden gap-0 dark:bg-slate-900 dark:border-slate-800">
+          <DialogHeader className="px-6 pt-6 pb-4 bg-gradient-to-br from-red-50 to-slate-50 dark:from-slate-800 dark:to-slate-900 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-red-500 rounded-lg">
+                <Trash2 className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
+                  Delete Template
+                </DialogTitle>
+                <DialogDescription className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                  This action cannot be undone
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+          
+          <div className="px-6 py-6 space-y-4">
+            <p className="text-slate-700 dark:text-slate-300">
+              Are you sure you want to delete this questionnaire template? This will permanently remove it and all associated questions.
+            </p>
+            {deletingTemplate && (
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700 space-y-2">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                      {deletingTemplate.name}
+                    </p>
+                    {deletingTemplate.description && (
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        {deletingTemplate.description}
+                      </p>
+                    )}
+                  </div>
+                  <span className={`ml-3 px-2 py-0.5 rounded text-xs font-medium ${
+                    deletingTemplate.status === 'PUBLISHED' 
+                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' 
+                      : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
+                  }`}>
+                    {deletingTemplate.status}
+                  </span>
+                </div>
+                <div className="flex items-center gap-4 pt-2 border-t border-slate-200 dark:border-slate-700">
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                    {deletingTemplate.question_count} questions
+                  </span>
+                </div>
+              </div>
+            )}
+            <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+              <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-500 mt-0.5 flex-shrink-0" />
+              <p className="text-xs text-amber-800 dark:text-amber-300">
+                <strong>Warning:</strong> Any dossiers currently using this template may be affected.
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter className="px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800 flex-row gap-3">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setIsDeleteDialogOpen(false);
+                setDeletingTemplate(null);
+              }}
+              disabled={isDeleting}
+              className="flex-1 h-11 border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="flex-1 h-11 bg-red-600 hover:bg-red-700 disabled:opacity-50"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete Template
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
