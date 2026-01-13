@@ -56,6 +56,11 @@ export default function TemplateEditorPage() {
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
+  // Delete confirmation state
+  const [deletingQuestionId, setDeletingQuestionId] = useState<number | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   // New Question State
   const [isAdding, setIsAdding] = useState(false);
   const [newQuestion, setNewQuestion] = useState({
@@ -121,10 +126,20 @@ export default function TemplateEditorPage() {
 
     setIsCreating(true);
     try {
-      await apiClient.post(`/questionnaires/${id}/questions/`, {
-        ...newQuestion,
-        choices_json: choices
-      });
+      // Backend expects 'template' field instead of being inferred from URL
+      const payload = {
+        text: newQuestion.text,
+        question_type: newQuestion.question_type,
+        is_mandatory: newQuestion.is_mandatory,
+        choices_json: choices,
+        help_text: newQuestion.help_text,
+        order: newQuestion.order,
+        template: parseInt(id as string) // Add template field
+      };
+      
+      console.log("Creating question with payload:", payload); // Debug log
+      
+      await apiClient.post(`/questionnaires/${id}/questions/`, payload);
       toast.success("Question added");
       setIsAdding(false);
       // Reset form
@@ -138,9 +153,14 @@ export default function TemplateEditorPage() {
       });
       setChoicesInput("");
       fetchData();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to add question", error);
-      toast.error("Failed to add question");
+      console.error("Error response:", error.response?.data); // Debug log
+      const errorMsg = error.response?.data?.detail || 
+                       error.response?.data?.text?.[0] || 
+                       JSON.stringify(error.response?.data) ||
+                       "Failed to add question";
+      toast.error(errorMsg);
     } finally {
       setIsCreating(false);
     }
@@ -163,30 +183,53 @@ export default function TemplateEditorPage() {
       : choicesInput.split(',').map(s => s.trim()).filter(Boolean);
 
     try {
-      await apiClient.patch(`/questionnaires/${id}/questions/${editingQuestion.id}/`, {
-        ...editingQuestion,
-        choices_json: choices
-      });
+      const payload = {
+        text: editingQuestion.text,
+        question_type: editingQuestion.question_type,
+        is_mandatory: editingQuestion.is_mandatory,
+        choices_json: choices,
+        help_text: editingQuestion.help_text,
+        order: editingQuestion.order
+      };
+      
+      console.log("Updating question with payload:", payload); // Debug log
+      
+      await apiClient.patch(`/questionnaires/${id}/questions/${editingQuestion.id}/`, payload);
       toast.success("Question updated");
       setIsEditDialogOpen(false);
       setEditingQuestion(null);
       setChoicesInput("");
       fetchData();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to update question", error);
-      toast.error("Failed to update question");
+      console.error("Error response:", error.response?.data); // Debug log
+      const errorMsg = error.response?.data?.detail || 
+                       JSON.stringify(error.response?.data) ||
+                       "Failed to update question";
+      toast.error(errorMsg);
     }
   };
 
-  const deleteQuestion = async (qId: number) => {
-    if (!confirm("Delete this question?")) return;
+  const handleDeleteClick = (question: Question) => {
+    setDeletingQuestionId(question.id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deletingQuestionId) return;
+    
+    setIsDeleting(true);
     try {
-      await apiClient.delete(`/questionnaires/${id}/questions/${qId}/`);
+      await apiClient.delete(`/questionnaires/${id}/questions/${deletingQuestionId}/`);
       toast.success("Question deleted");
+      setIsDeleteDialogOpen(false);
+      setDeletingQuestionId(null);
       fetchData();
     } catch (error) {
       console.error("Failed to delete question", error);
       toast.error("Failed to delete question");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -278,7 +321,7 @@ export default function TemplateEditorPage() {
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    onClick={() => deleteQuestion(q.id)} 
+                    onClick={() => handleDeleteClick(q)} 
                     className="text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -475,6 +518,71 @@ export default function TemplateEditorPage() {
             <Button onClick={handleUpdateQuestion} className="flex-1 bg-blue-600 hover:bg-blue-700">
               <Check className="w-4 h-4 mr-2" />
               Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden gap-0 dark:bg-slate-900 dark:border-slate-800">
+          <DialogHeader className="px-6 pt-6 pb-4 bg-gradient-to-br from-red-50 to-slate-50 dark:from-slate-800 dark:to-slate-900 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-red-500 rounded-lg">
+                <Trash2 className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
+                  Delete Question
+                </DialogTitle>
+                <DialogDescription className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                  This action cannot be undone
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+          
+          <div className="px-6 py-6">
+            <p className="text-slate-700 dark:text-slate-300">
+              Are you sure you want to delete this question? This will permanently remove it from the template.
+            </p>
+            {deletingQuestionId && questions.find(q => q.id === deletingQuestionId) && (
+              <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
+                <p className="text-sm font-medium text-slate-900 dark:text-white">
+                  {questions.find(q => q.id === deletingQuestionId)?.text}
+                </p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800 flex-row gap-3">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setIsDeleteDialogOpen(false);
+                setDeletingQuestionId(null);
+              }}
+              disabled={isDeleting}
+              className="flex-1 h-11 border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="flex-1 h-11 bg-red-600 hover:bg-red-700 disabled:opacity-50"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete Question
+                </>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
