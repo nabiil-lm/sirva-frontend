@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Save, Plus, Trash2, GripVertical, Check } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, GripVertical, Check, Loader2, Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,8 +16,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
-import dossierService, { Question, QuestionnaireTemplate } from "@/services/dossier.service";
+import apiClient from "@/lib/api-client";
+
+interface Question {
+  id: number;
+  text: string;
+  question_type: string;
+  is_mandatory: boolean;
+  choices_json: string[];
+  help_text: string;
+  order: number;
+}
+
+interface QuestionnaireTemplate {
+  id: number;
+  name: string;
+  description: string;
+  status: string;
+  question_count: number;
+}
 
 export default function TemplateEditorPage() {
   const { id } = useParams();
@@ -25,6 +51,10 @@ export default function TemplateEditorPage() {
   const [template, setTemplate] = useState<QuestionnaireTemplate | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Edit question state
+  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   // New Question State
   const [isAdding, setIsAdding] = useState(false);
@@ -37,6 +67,7 @@ export default function TemplateEditorPage() {
     order: 0
   });
   const [choicesInput, setChoicesInput] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -44,12 +75,15 @@ export default function TemplateEditorPage() {
 
   const fetchData = async () => {
     try {
-      const tmpl = await dossierService.getTemplate(Number(id));
-      setTemplate(tmpl);
-      const data = await dossierService.getTemplateWithQuestions(Number(id));
-      setQuestions(data.questions);
-      setNewQuestion(prev => ({ ...prev, order: data.questions.length + 1 }));
+      setIsLoading(true);
+      const tmplResponse = await apiClient.get(`/questionnaires/${id}/`);
+      setTemplate(tmplResponse.data);
+      
+      const dataResponse = await apiClient.get(`/questionnaires/${id}/with_questions/`);
+      setQuestions(dataResponse.data.questions || []);
+      setNewQuestion(prev => ({ ...prev, order: (dataResponse.data.questions?.length || 0) + 1 }));
     } catch (error) {
+      console.error("Failed to load template data", error);
       toast.error("Failed to load template data");
     } finally {
       setIsLoading(false);
@@ -60,24 +94,34 @@ export default function TemplateEditorPage() {
     if (!template) return;
     try {
       const newStatus = template.status === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED';
-      await dossierService.updateTemplate(template.id, { status: newStatus });
-      setTemplate({ ...template, status: newStatus as any });
+      await apiClient.patch(`/questionnaires/${template.id}/`, { status: newStatus });
+      setTemplate({ ...template, status: newStatus });
       toast.success(`Template ${newStatus === 'PUBLISHED' ? 'Published' : 'Unpublished'}`);
     } catch (error) {
+      console.error("Failed to update status", error);
       toast.error("Failed to update status");
     }
   };
 
   const handleAddQuestion = async () => {
-    if (!newQuestion.text) return toast.error("Question text required");
+    if (!newQuestion.text.trim()) {
+      toast.error("Question text is required");
+      return;
+    }
     
     // Process choices
     const choices = newQuestion.question_type === 'TRUE_FALSE' || newQuestion.question_type === 'TEXT' 
       ? [] 
       : choicesInput.split(',').map(s => s.trim()).filter(Boolean);
 
+    if ((newQuestion.question_type === 'SINGLE_CHOICE' || newQuestion.question_type === 'MULTIPLE_CHOICE') && choices.length === 0) {
+      toast.error("Please provide at least one choice option");
+      return;
+    }
+
+    setIsCreating(true);
     try {
-      await dossierService.createQuestion(Number(id), {
+      await apiClient.post(`/questionnaires/${id}/questions/`, {
         ...newQuestion,
         choices_json: choices
       });
@@ -95,21 +139,64 @@ export default function TemplateEditorPage() {
       setChoicesInput("");
       fetchData();
     } catch (error) {
+      console.error("Failed to add question", error);
       toast.error("Failed to add question");
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleEditQuestion = (question: Question) => {
+    setEditingQuestion({ ...question });
+    setChoicesInput(question.choices_json.join(', '));
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdateQuestion = async () => {
+    if (!editingQuestion || !editingQuestion.text.trim()) {
+      toast.error("Question text is required");
+      return;
+    }
+
+    const choices = editingQuestion.question_type === 'TRUE_FALSE' || editingQuestion.question_type === 'TEXT' 
+      ? [] 
+      : choicesInput.split(',').map(s => s.trim()).filter(Boolean);
+
+    try {
+      await apiClient.patch(`/questionnaires/${id}/questions/${editingQuestion.id}/`, {
+        ...editingQuestion,
+        choices_json: choices
+      });
+      toast.success("Question updated");
+      setIsEditDialogOpen(false);
+      setEditingQuestion(null);
+      setChoicesInput("");
+      fetchData();
+    } catch (error) {
+      console.error("Failed to update question", error);
+      toast.error("Failed to update question");
     }
   };
 
   const deleteQuestion = async (qId: number) => {
     if (!confirm("Delete this question?")) return;
     try {
-      await dossierService.deleteQuestion(Number(id), qId);
+      await apiClient.delete(`/questionnaires/${id}/questions/${qId}/`);
+      toast.success("Question deleted");
       fetchData();
     } catch (error) {
+      console.error("Failed to delete question", error);
       toast.error("Failed to delete question");
     }
   };
 
-  if (isLoading || !template) return <div className="p-10 text-center">Loading...</div>;
+  if (isLoading || !template) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-8 animate-in fade-in">
@@ -124,20 +211,23 @@ export default function TemplateEditorPage() {
             <div className="flex items-center gap-2 mt-1">
               <span className={`px-2 py-0.5 rounded text-xs font-medium ${
                 template.status === 'PUBLISHED' 
-                  ? 'bg-emerald-100 text-emerald-700' 
-                  : 'bg-amber-100 text-amber-700'
+                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' 
+                  : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
               }`}>
                 {template.status}
               </span>
               <span className="text-slate-400">•</span>
-              <span className="text-sm text-slate-500">{questions.length} Questions</span>
+              <span className="text-sm text-slate-500 dark:text-slate-400">{questions.length} Questions</span>
             </div>
           </div>
         </div>
         <Button 
           onClick={handlePublish}
           variant={template.status === 'PUBLISHED' ? "outline" : "default"}
-          className={template.status === 'PUBLISHED' ? "text-amber-600 border-amber-200 hover:bg-amber-50" : "bg-emerald-600 hover:bg-emerald-700"}
+          className={template.status === 'PUBLISHED' 
+            ? "text-amber-600 border-amber-200 hover:bg-amber-50 dark:border-amber-800 dark:text-amber-400 dark:hover:bg-amber-900/20" 
+            : "bg-emerald-600 hover:bg-emerald-700"
+          }
         >
           {template.status === 'PUBLISHED' ? "Revert to Draft" : "Publish Template"}
         </Button>
@@ -146,23 +236,54 @@ export default function TemplateEditorPage() {
       {/* Questions List */}
       <div className="space-y-4">
         {questions.map((q, idx) => (
-          <Card key={q.id} className="p-4 flex gap-4 items-start group hover:border-blue-200 transition-colors">
+          <Card key={q.id} className="p-4 flex gap-4 items-start group hover:border-blue-200 transition-colors dark:bg-slate-900 dark:border-slate-800 dark:hover:border-blue-800">
             <div className="mt-1 text-slate-400">
               <GripVertical className="w-5 h-5" />
             </div>
             <div className="flex-1">
-              <div className="flex justify-between">
-                <h3 className="font-medium text-slate-900 dark:text-white">
-                  <span className="text-slate-400 mr-2">#{idx + 1}</span>
-                  {q.text}
-                </h3>
-                <Button variant="ghost" size="sm" onClick={() => deleteQuestion(q.id)} className="text-red-400 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-600 hover:bg-red-50">
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-              <div className="flex gap-3 mt-2 text-xs text-slate-500">
-                <span className="bg-slate-100 px-2 py-1 rounded dark:bg-slate-800">{q.question_type}</span>
-                {q.is_mandatory && <span className="text-red-500 font-medium flex items-center"><span className="mr-1">*</span> Mandatory</span>}
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <h3 className="font-medium text-slate-900 dark:text-white">
+                    <span className="text-slate-400 mr-2">#{idx + 1}</span>
+                    {q.text}
+                  </h3>
+                  {q.help_text && (
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{q.help_text}</p>
+                  )}
+                  <div className="flex gap-3 mt-2 text-xs text-slate-500">
+                    <span className="bg-slate-100 px-2 py-1 rounded dark:bg-slate-800">
+                      {q.question_type.replace('_', ' ')}
+                    </span>
+                    {q.is_mandatory && (
+                      <span className="text-red-500 font-medium flex items-center">
+                        <span className="mr-1">*</span> Mandatory
+                      </span>
+                    )}
+                    {q.choices_json.length > 0 && (
+                      <span className="text-slate-400">
+                        {q.choices_json.length} choices
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => handleEditQuestion(q)}
+                    className="text-blue-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => deleteQuestion(q.id)} 
+                    className="text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           </Card>
@@ -171,25 +292,26 @@ export default function TemplateEditorPage() {
 
       {/* Add Question Form */}
       {isAdding ? (
-        <Card className="p-6 border-blue-200 shadow-lg ring-1 ring-blue-500/20">
-          <h3 className="font-semibold mb-4 text-slate-900">New Question</h3>
+        <Card className="p-6 border-blue-200 shadow-lg ring-1 ring-blue-500/20 dark:bg-slate-900 dark:border-blue-800">
+          <h3 className="font-semibold mb-4 text-slate-900 dark:text-white">New Question</h3>
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Question Text</Label>
+                <Label className="dark:text-slate-300">Question Text <span className="text-red-500">*</span></Label>
                 <Input 
                   value={newQuestion.text} 
                   onChange={e => setNewQuestion({...newQuestion, text: e.target.value})}
-                  placeholder="Ask something..." 
+                  placeholder="Ask something..."
+                  className="dark:bg-slate-950 dark:border-slate-700 dark:text-white"
                 />
               </div>
               <div className="space-y-2">
-                <Label>Type</Label>
+                <Label className="dark:text-slate-300">Type</Label>
                 <Select 
                   value={newQuestion.question_type} 
                   onValueChange={v => setNewQuestion({...newQuestion, question_type: v})}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="dark:bg-slate-950 dark:border-slate-700 dark:text-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -204,21 +326,23 @@ export default function TemplateEditorPage() {
 
             {(newQuestion.question_type === 'SINGLE_CHOICE' || newQuestion.question_type === 'MULTIPLE_CHOICE') && (
               <div className="space-y-2">
-                <Label>Choices (comma separated)</Label>
+                <Label className="dark:text-slate-300">Choices (comma separated) <span className="text-red-500">*</span></Label>
                 <Input 
                   value={choicesInput}
                   onChange={e => setChoicesInput(e.target.value)}
-                  placeholder="Option A, Option B, Option C" 
+                  placeholder="Option A, Option B, Option C"
+                  className="dark:bg-slate-950 dark:border-slate-700 dark:text-white"
                 />
               </div>
             )}
 
             <div className="space-y-2">
-              <Label>Help Text (Optional)</Label>
+              <Label className="dark:text-slate-300">Help Text (Optional)</Label>
               <Input 
                 value={newQuestion.help_text} 
                 onChange={e => setNewQuestion({...newQuestion, help_text: e.target.value})}
-                placeholder="Guidance for the user..." 
+                placeholder="Guidance for the user..."
+                className="dark:bg-slate-950 dark:border-slate-700 dark:text-white"
               />
             </div>
 
@@ -228,24 +352,133 @@ export default function TemplateEditorPage() {
                 checked={newQuestion.is_mandatory} 
                 onCheckedChange={c => setNewQuestion({...newQuestion, is_mandatory: c})} 
               />
-              <Label htmlFor="mandatory">Mandatory Response</Label>
+              <Label htmlFor="mandatory" className="dark:text-slate-300">Mandatory Response</Label>
             </div>
 
             <div className="pt-2 flex justify-end gap-2">
-              <Button variant="ghost" onClick={() => setIsAdding(false)}>Cancel</Button>
-              <Button onClick={handleAddQuestion}>Save Question</Button>
+              <Button 
+                variant="ghost" 
+                onClick={() => {
+                  setIsAdding(false);
+                  setNewQuestion({
+                    text: "",
+                    question_type: "TRUE_FALSE",
+                    is_mandatory: true,
+                    choices_json: [],
+                    help_text: "",
+                    order: questions.length + 1
+                  });
+                  setChoicesInput("");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleAddQuestion} disabled={isCreating}>
+                {isCreating && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Save Question
+              </Button>
             </div>
           </div>
         </Card>
       ) : (
         <Button 
           variant="outline" 
-          className="w-full h-16 border-dashed border-slate-300 text-slate-500 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50/50"
+          className="w-full h-16 border-dashed border-slate-300 text-slate-500 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50/50 dark:border-slate-700 dark:text-slate-400 dark:hover:border-blue-600 dark:hover:bg-blue-900/20"
           onClick={() => setIsAdding(true)}
         >
           <Plus className="w-5 h-5 mr-2" /> Add Question
         </Button>
       )}
+
+      {/* Edit Question Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[550px] p-0 overflow-hidden gap-0 dark:bg-slate-900 dark:border-slate-800">
+          <DialogHeader className="px-6 pt-6 pb-4 bg-gradient-to-br from-blue-50 to-slate-50 dark:from-slate-800 dark:to-slate-900 border-b border-slate-100 dark:border-slate-800">
+            <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">Edit Question</DialogTitle>
+            <DialogDescription className="text-sm text-slate-600 dark:text-slate-400">
+              Make changes to this question
+            </DialogDescription>
+          </DialogHeader>
+          
+          {editingQuestion && (
+            <div className="px-6 py-6 space-y-4">
+              <div className="space-y-2">
+                <Label className="dark:text-slate-300">Question Text <span className="text-red-500">*</span></Label>
+                <Textarea 
+                  value={editingQuestion.text} 
+                  onChange={e => setEditingQuestion({...editingQuestion, text: e.target.value})}
+                  className="min-h-[80px] dark:bg-slate-950 dark:border-slate-700 dark:text-white"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="dark:text-slate-300">Type</Label>
+                <Select 
+                  value={editingQuestion.question_type} 
+                  onValueChange={v => setEditingQuestion({...editingQuestion, question_type: v})}
+                >
+                  <SelectTrigger className="dark:bg-slate-950 dark:border-slate-700 dark:text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="TRUE_FALSE">True / False</SelectItem>
+                    <SelectItem value="SINGLE_CHOICE">Single Choice</SelectItem>
+                    <SelectItem value="MULTIPLE_CHOICE">Multiple Choice</SelectItem>
+                    <SelectItem value="TEXT">Text Explanation</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {(editingQuestion.question_type === 'SINGLE_CHOICE' || editingQuestion.question_type === 'MULTIPLE_CHOICE') && (
+                <div className="space-y-2">
+                  <Label className="dark:text-slate-300">Choices (comma separated)</Label>
+                  <Input 
+                    value={choicesInput}
+                    onChange={e => setChoicesInput(e.target.value)}
+                    placeholder="Option A, Option B, Option C"
+                    className="dark:bg-slate-950 dark:border-slate-700 dark:text-white"
+                  />
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label className="dark:text-slate-300">Help Text</Label>
+                <Input 
+                  value={editingQuestion.help_text || ""} 
+                  onChange={e => setEditingQuestion({...editingQuestion, help_text: e.target.value})}
+                  className="dark:bg-slate-950 dark:border-slate-700 dark:text-white"
+                />
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Switch 
+                  checked={editingQuestion.is_mandatory} 
+                  onCheckedChange={c => setEditingQuestion({...editingQuestion, is_mandatory: c})} 
+                />
+                <Label className="dark:text-slate-300">Mandatory Response</Label>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800 flex-row gap-3">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setIsEditDialogOpen(false);
+                setEditingQuestion(null);
+                setChoicesInput("");
+              }}
+              className="flex-1 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleUpdateQuestion} className="flex-1 bg-blue-600 hover:bg-blue-700">
+              <Check className="w-4 h-4 mr-2" />
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
