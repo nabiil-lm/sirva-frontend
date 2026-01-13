@@ -87,49 +87,84 @@ export default function TemplatesPage() {
         </div>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-md">
               <Plus className="w-4 h-4 mr-2" /> New Template
             </Button>
           </DialogTrigger>
-          <DialogContent className="dark:bg-slate-900 dark:border-slate-800">
-            <DialogHeader>
-              <DialogTitle className="dark:text-white">Create New Template</DialogTitle>
+          <DialogContent className="sm:max-w-[550px] p-0 overflow-hidden gap-0 dark:bg-slate-900 dark:border-slate-800">
+            <DialogHeader className="px-6 pt-6 pb-4 bg-gradient-to-br from-blue-50 to-slate-50 dark:from-slate-800 dark:to-slate-900 border-b border-slate-100 dark:border-slate-800">
+              <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
+                <div className="p-2 bg-blue-500 rounded-lg">
+                  <FileText className="w-5 h-5 text-white" />
+                </div>
+                Create New Template
+              </DialogTitle>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">
+                Create a new questionnaire template for security assessments.
+              </p>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label className="dark:text-slate-300">Name</Label>
+            
+            <div className="px-6 py-6 space-y-6">
+              <div className="space-y-2.5">
+                <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                  Template Name
+                  <span className="text-red-500 text-base">*</span>
+                </Label>
                 <Input 
                   value={newTemplate.name} 
                   onChange={e => setNewTemplate({...newTemplate, name: e.target.value})}
                   placeholder="e.g., Cloud Security Assessment v2"
-                  className="dark:bg-slate-950 dark:border-slate-700 dark:text-white"
+                  className="h-11 border-slate-300 focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-950 dark:border-slate-700 dark:text-white dark:placeholder:text-slate-500 transition-colors"
                 />
               </div>
-              <div className="space-y-2">
-                <Label className="dark:text-slate-300">Description</Label>
+              
+              <div className="space-y-2.5">
+                <Label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                  Description
+                  <span className="text-xs font-normal text-slate-500 dark:text-slate-400 ml-1.5">(Optional)</span>
+                </Label>
                 <Textarea 
                   value={newTemplate.description} 
                   onChange={e => setNewTemplate({...newTemplate, description: e.target.value})}
-                  placeholder="Brief description of when to use this template"
-                  className="dark:bg-slate-950 dark:border-slate-700 dark:text-white"
+                  placeholder="Provide context about when this template should be used..."
+                  className="min-h-[120px] resize-none border-slate-300 focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-950 dark:border-slate-700 dark:text-white dark:placeholder:text-slate-500 transition-colors"
+                  rows={5}
                 />
+                <p className="text-xs text-slate-500 dark:text-slate-400 flex items-start gap-1.5">
+                  <span className="text-blue-500 mt-0.5">ℹ</span>
+                  Help users understand when to select this template.
+                </p>
               </div>
             </div>
-            <DialogFooter>
+
+            <DialogFooter className="px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800 flex-row gap-3 sm:gap-3">
               <Button 
+                type="button"
                 variant="outline" 
-                onClick={() => setIsCreateOpen(false)}
-                className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                onClick={() => {
+                  setIsCreateOpen(false);
+                  setNewTemplate({ name: "", description: "" });
+                }}
+                className="flex-1 h-11 border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
               >
                 Cancel
               </Button>
               <Button 
                 onClick={handleCreate}
-                disabled={isCreating}
-                className="bg-blue-600 hover:bg-blue-700"
+                disabled={isCreating || !newTemplate.name.trim()}
+                className="flex-1 h-11 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all"
               >
-                {isCreating && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                Create Template
+                {isCreating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Template
+                  </>
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>

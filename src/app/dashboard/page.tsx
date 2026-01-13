@@ -235,21 +235,21 @@ export default function DashboardPage() {
 
         {/* Quick Actions & Activity */}
         <div className="space-y-6">
-          <Card className="p-6 border-slate-200 shadow-sm bg-slate-900 text-white dark:bg-slate-800 dark:border-slate-700">
-            <h3 className="font-semibold mb-4 flex items-center gap-2">
+          <Card className="p-6 border-slate-200 shadow-sm bg-gradient-to-br from-slate-900 to-slate-800 text-white dark:from-slate-800 dark:to-slate-900 dark:border-slate-700">
+            <h3 className="font-semibold mb-6 flex items-center gap-2 text-lg">
               <TrendingUp className="w-5 h-5 text-blue-400" />
               Quick Actions
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {isAdmin ? (
                 <>
-                  <Link href="/dashboard/admin/templates">
+                  <Link href="/dashboard/admin/templates" className="block">
                     <QuickActionButton label="Manage Templates" />
                   </Link>
-                  <Link href="/dashboard/dossiers">
+                  <Link href="/dashboard/dossiers" className="block">
                     <QuickActionButton label="View All Dossiers" count={stats.totalDossiers} />
                   </Link>
-                  <Link href="/dashboard/admin/users">
+                  <Link href="/dashboard/admin/users" className="block">
                     <QuickActionButton label="Manage Users" />
                   </Link>
                 </>
@@ -257,7 +257,7 @@ export default function DashboardPage() {
                 <>
                   <QuickActionButton label="Review Pending Risks" count={3} />
                   <QuickActionButton label="Validate Dossiers" count={1} />
-                  <Link href="/dashboard/admin/templates">
+                  <Link href="/dashboard/admin/templates" className="block">
                     <QuickActionButton label="Manage Templates" />
                   </Link>
                 </>
@@ -339,10 +339,10 @@ function StatCard({ title, value, trend, icon: Icon, color }: StatCardProps) {
 
 function QuickActionButton({ label, count }: { label: string, count?: number }) {
   return (
-    <button className="w-full flex items-center justify-between p-3 rounded-lg bg-white/10 hover:bg-white/20 transition-colors text-sm font-medium">
-      <span>{label}</span>
+    <button className="w-full flex items-center justify-between p-4 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all text-sm font-medium group">
+      <span className="group-hover:translate-x-1 transition-transform">{label}</span>
       {count !== undefined && (
-        <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+        <span className="bg-blue-500 text-white text-xs px-2.5 py-1 rounded-full font-semibold">
           {count}
         </span>
       )}
