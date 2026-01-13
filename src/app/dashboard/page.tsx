@@ -48,17 +48,30 @@ export default function DashboardPage() {
   });
 
   const isSO = userRole === 'security_officer' || userRole === 'SO';
+  const isAdmin = userRole === 'admin' || userRole === 'ADMIN';
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         // Fetch dossiers
         const response = await apiClient.get('/dossiers/');
-        const data = response.data.results || response.data; // Handle pagination if present
+        const data = response.data.results || response.data;
         setDossiers(data);
 
-        // Calculate simple stats based on role
-        if (isSO) {
+        // Fetch admin stats if admin user
+        if (isAdmin) {
+          try {
+            const statsResponse = await apiClient.get('/dossiers/admin_stats/');
+            setStats({
+              totalDossiers: statsResponse.data.total_dossiers,
+              pendingActions: statsResponse.data.pending_reviews,
+              avgScore: 85, // Still mocked
+              highRisks: 12 // Still mocked
+            });
+          } catch (error) {
+            console.error("Failed to fetch admin stats", error);
+          }
+        } else if (isSO) {
           // SO Stats Logic
           const pendingReview = data.filter((d: Dossier) => 
             ['QUESTIONNAIRE_SOUMIS', 'RISQUES_EN_COURS', 'PRET_VALIDATION'].includes(d.status)
@@ -93,7 +106,7 @@ export default function DashboardPage() {
     };
 
     fetchDashboardData();
-  }, [isSO]);
+  }, [isSO, isAdmin]);
 
   // Helper to get status color
   const getStatusColor = (status: string) => {
@@ -228,11 +241,25 @@ export default function DashboardPage() {
               Quick Actions
             </h3>
             <div className="space-y-3">
-              {isSO ? (
+              {isAdmin ? (
+                <>
+                  <Link href="/dashboard/admin/templates">
+                    <QuickActionButton label="Manage Templates" />
+                  </Link>
+                  <Link href="/dashboard/dossiers">
+                    <QuickActionButton label="View All Dossiers" count={stats.totalDossiers} />
+                  </Link>
+                  <Link href="/dashboard/admin/users">
+                    <QuickActionButton label="Manage Users" />
+                  </Link>
+                </>
+              ) : isSO ? (
                 <>
                   <QuickActionButton label="Review Pending Risks" count={3} />
                   <QuickActionButton label="Validate Dossiers" count={1} />
-                  <QuickActionButton label="Manage Templates" />
+                  <Link href="/dashboard/admin/templates">
+                    <QuickActionButton label="Manage Templates" />
+                  </Link>
                 </>
               ) : (
                 <>
@@ -314,7 +341,7 @@ function QuickActionButton({ label, count }: { label: string, count?: number }) 
   return (
     <button className="w-full flex items-center justify-between p-3 rounded-lg bg-white/10 hover:bg-white/20 transition-colors text-sm font-medium">
       <span>{label}</span>
-      {count && (
+      {count !== undefined && (
         <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
           {count}
         </span>

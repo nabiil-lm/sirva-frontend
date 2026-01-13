@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth.context";
 import { UserNav } from "@/components/dashboard/UserNav";
 
-export default function DashboardLayout({
+export function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -109,4 +109,8 @@ export default function DashboardLayout({
       )}
     </div>
   );
+}
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return <DashboardLayout>{children}</DashboardLayout>;
 }
