@@ -185,23 +185,29 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {loading ? (
-                    [...Array(3)].map((_, i) => (
-                      <tr key={i} className="animate-pulse">
-                        <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded w-32 dark:bg-slate-700"></div></td>
-                        <td className="px-6 py-4"><div className="h-6 bg-slate-200 rounded-full w-24 dark:bg-slate-700"></div></td>
-                        <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded w-20 dark:bg-slate-700"></div></td>
-                        <td className="px-6 py-4"></td>
-                      </tr>
-                    ))
-                  ) : dossiers.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="p-12 text-center">
-                        <p className="text-slate-500 dark:text-slate-400">No dossiers found. Start a new assessment to see it here.</p>
-                      </td>
-                    </tr>
-                  ) : (
-                    dossiers.slice(0, 5).map((dossier) => (
+                  {(() => {
+                    if (loading) {
+                      return [...Array(3)].map((_, i) => (
+                        <tr key={i} className="animate-pulse">
+                          <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded w-32 dark:bg-slate-700"></div></td>
+                          <td className="px-6 py-4"><div className="h-6 bg-slate-200 rounded-full w-24 dark:bg-slate-700"></div></td>
+                          <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded w-20 dark:bg-slate-700"></div></td>
+                          <td className="px-6 py-4"></td>
+                        </tr>
+                      ));
+                    }
+                    
+                    if (dossiers.length === 0) {
+                      return (
+                        <tr>
+                          <td colSpan={4} className="p-12 text-center">
+                            <p className="text-slate-500 dark:text-slate-400">No dossiers found. Start a new assessment to see it here.</p>
+                          </td>
+                        </tr>
+                      );
+                    }
+                    
+                    return dossiers.slice(0, 5).map((dossier) => (
                       <tr key={dossier.id} className="hover:bg-slate-50/50 transition-colors dark:hover:bg-slate-800/50">
                         <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
                           {dossier.title}
@@ -225,8 +231,8 @@ export default function DashboardPage() {
                           </Button>
                         </td>
                       </tr>
-                    ))
-                  )}
+                    ));
+                  })()}
                 </tbody>
               </table>
             </div>
@@ -241,33 +247,43 @@ export default function DashboardPage() {
               Quick Actions
             </h3>
             <div className="space-y-2">
-              {isAdmin ? (
-                <>
-                  <Link href="/dashboard/admin/templates" className="block">
-                    <QuickActionButton label="Manage Templates" />
-                  </Link>
-                  <Link href="/dashboard/dossiers" className="block">
-                    <QuickActionButton label="View All Dossiers" count={stats.totalDossiers} />
-                  </Link>
-                  <Link href="/dashboard/admin/users" className="block">
-                    <QuickActionButton label="Manage Users" />
-                  </Link>
-                </>
-              ) : isSO ? (
-                <>
-                  <QuickActionButton label="Review Pending Risks" count={3} />
-                  <QuickActionButton label="Validate Dossiers" count={1} />
-                  <Link href="/dashboard/admin/templates" className="block">
-                    <QuickActionButton label="Manage Templates" />
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <QuickActionButton label="Continue Questionnaire" count={1} />
-                  <QuickActionButton label="Upload Documents" count={2} />
-                  <QuickActionButton label="Accept Risks" count={4} />
-                </>
-              )}
+              {(() => {
+                if (isAdmin) {
+                  return (
+                    <>
+                      <Link href="/dashboard/admin/templates" className="block">
+                        <QuickActionButton label="Manage Templates" />
+                      </Link>
+                      <Link href="/dashboard/dossiers" className="block">
+                        <QuickActionButton label="View All Dossiers" count={stats.totalDossiers} />
+                      </Link>
+                      <Link href="/dashboard/admin/users" className="block">
+                        <QuickActionButton label="Manage Users" />
+                      </Link>
+                    </>
+                  );
+                }
+                
+                if (isSO) {
+                  return (
+                    <>
+                      <QuickActionButton label="Review Pending Risks" count={3} />
+                      <QuickActionButton label="Validate Dossiers" count={1} />
+                      <Link href="/dashboard/admin/templates" className="block">
+                        <QuickActionButton label="Manage Templates" />
+                      </Link>
+                    </>
+                  );
+                }
+                
+                return (
+                  <>
+                    <QuickActionButton label="Continue Questionnaire" count={1} />
+                    <QuickActionButton label="Upload Documents" count={2} />
+                    <QuickActionButton label="Accept Risks" count={4} />
+                  </>
+                );
+              })()}
             </div>
           </Card>
 
