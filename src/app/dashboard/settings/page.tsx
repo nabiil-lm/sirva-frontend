@@ -17,7 +17,7 @@ import { useTheme } from "@/contexts/theme.context";
 
 export default function SettingsPage() {
   const { user, isLoading: authLoading, refreshUser } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"account" | "security" | "preferences">("preferences");
   
@@ -52,6 +52,14 @@ export default function SettingsPage() {
         setAvatarPreview(avatarUrl);
       }
       
+      // Load user's personal theme preference
+      if (user.id) {
+        const userTheme = localStorage.getItem(`theme_${user.id}`);
+        if (userTheme === 'dark' && theme !== 'dark') {
+          setTheme('dark');
+        }
+      }
+      
       // Load preferences
       if (user.preferences) {
         setEmailNotifs(user.preferences.emailNotifs !== false);
@@ -62,8 +70,15 @@ export default function SettingsPage() {
   }, [user]);
 
   const handleDarkModeToggle = () => {
-    toggleTheme();
-    toast.success(theme === "light" ? "Dark mode enabled" : "Light mode enabled");
+    const newTheme = theme === "light" ? "dark" : "light";
+    
+    // Save theme preference per user
+    if (user?.id) {
+      localStorage.setItem(`theme_${user.id}`, newTheme);
+    }
+    
+    setTheme(newTheme);
+    toast.success(newTheme === "dark" ? "Dark mode enabled" : "Light mode enabled");
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {

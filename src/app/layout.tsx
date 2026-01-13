@@ -33,9 +33,25 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                const theme = localStorage.getItem('theme');
-                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                  document.documentElement.classList.add('dark');
+                // Get user ID from cookie or localStorage
+                const getCookie = (name) => {
+                  const value = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+                  return value ? value.pop() : '';
+                };
+                
+                const token = getCookie('access_token');
+                
+                if (token) {
+                  // User is authenticated, check their personal theme preference
+                  const userId = localStorage.getItem('current_user_id');
+                  const userTheme = userId ? localStorage.getItem('theme_' + userId) : null;
+                  
+                  if (userTheme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                  }
+                } else {
+                  // User is not authenticated, always use light mode
+                  document.documentElement.classList.remove('dark');
                 }
               } catch (e) {}
             `,

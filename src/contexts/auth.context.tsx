@@ -60,6 +60,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     setUser(userData);
     
+    // Store user ID for theme persistence
+    if (userData.id) {
+      localStorage.setItem('current_user_id', userData.id);
+    }
+    
     if (userData.role) {
       setUserRole(userData.role);
     } else if (userData.email) {
@@ -96,13 +101,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initAuth();
   }, []);
 
-  // Theme Management Effect
+  // Theme Management Effect - Load user's personal theme preference
   useEffect(() => {
-    // Only apply dark mode if user is logged in and has explicitly enabled it
-    if (user && user.preferences?.darkMode) {
-      document.documentElement.classList.add('dark');
+    if (user?.id) {
+      const userTheme = localStorage.getItem(`theme_${user.id}`);
+      if (userTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     } else {
-      // Revert to light mode if no user or darkMode is false
+      // No user logged in, force light mode
       document.documentElement.classList.remove('dark');
     }
   }, [user]);
@@ -155,10 +164,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error('Logout error:', err);
     } finally {
       Cookies.remove('access_token');
+      
+      // Clear user-specific data
+      localStorage.removeItem('current_user_id');
+      
+      // Force light mode on logout
+      document.documentElement.classList.remove('dark');
+      
       setUser(null);
       setUserRole(null);
       setIsAuthenticated(false);
       setIsLoading(false);
+      
       // Redirect to login
       if (typeof window !== 'undefined') {
         window.location.href = '/auth/login';

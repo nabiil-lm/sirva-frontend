@@ -14,9 +14,12 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
-    // Read current theme from DOM (set by the script in layout.tsx)
-    const isDark = document.documentElement.classList.contains("dark");
-    return isDark ? "dark" : "light";
+    // Initialize from DOM (set by blocking script)
+    if (typeof document !== "undefined") {
+      const isDark = document.documentElement.classList.contains("dark");
+      return isDark ? "dark" : "light";
+    }
+    return "light";
   });
 
   const applyTheme = (newTheme: Theme) => {
@@ -26,7 +29,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     } else {
       root.classList.remove("dark");
     }
-    localStorage.setItem("theme", newTheme);
   };
 
   const setTheme = (newTheme: Theme) => {
