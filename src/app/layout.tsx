@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
 import { AuthProvider } from "@/contexts/auth.context";
+import { ThemeProvider } from "@/contexts/theme.context";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -26,14 +27,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="overscroll-none">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased dark:bg-slate-950 dark:text-slate-50`}
-      >
-        <AuthProvider>
-          {children}
-          <Toaster position="top-center" richColors />
-        </AuthProvider>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const theme = localStorage.getItem('theme');
+                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark');
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <ThemeProvider>
+          <AuthProvider>
+            <Toaster position="top-center" richColors />
+            {children}
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

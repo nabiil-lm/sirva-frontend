@@ -13,10 +13,13 @@ import { toast } from "sonner";
 import { Loader2, User, Lock, Bell, Moon, Sun, Upload, Globe } from "lucide-react";
 import authService from "@/services/auth.service";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTheme } from "@/contexts/theme.context";
 
 export default function SettingsPage() {
   const { user, isLoading: authLoading, refreshUser } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<"account" | "security" | "preferences">("preferences");
   
   // Profile State
   const [firstName, setFirstName] = useState("");
@@ -31,7 +34,6 @@ export default function SettingsPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   // Preferences State
-  const [darkMode, setDarkMode] = useState(false);
   const [emailNotifs, setEmailNotifs] = useState(true);
   const [securityAlerts, setSecurityAlerts] = useState(true);
   const [language, setLanguage] = useState("en");
@@ -52,7 +54,6 @@ export default function SettingsPage() {
       
       // Load preferences
       if (user.preferences) {
-        setDarkMode(!!user.preferences.darkMode);
         setEmailNotifs(user.preferences.emailNotifs !== false);
         setSecurityAlerts(user.preferences.securityAlerts !== false);
         setLanguage(user.preferences.language || "en");
@@ -60,43 +61,9 @@ export default function SettingsPage() {
     }
   }, [user]);
 
-  // NEW: Handle Dark Mode Toggle with Auto-Save and Immediate Feedback
-  const handleDarkModeToggle = async (checked: boolean) => {
-    // 1. Update local state
-    setDarkMode(checked);
-    
-    // 2. Immediate visual feedback (Preview)
-    if (checked) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-
-    // 3. Auto-save to backend
-    try {
-      await authService.updateProfile({
-        preferences: {
-          ...user?.preferences, // Preserve other preferences
-          darkMode: checked,
-          emailNotifs,
-          securityAlerts,
-          language
-        }
-      });
-      // 4. Refresh user context to ensure persistence across app
-      await refreshUser();
-      toast.success(checked ? "Dark mode enabled" : "Dark mode disabled");
-    } catch (error) {
-      console.error("Failed to save dark mode preference", error);
-      toast.error("Failed to save preference");
-      // Revert on failure
-      setDarkMode(!checked);
-      if (!checked) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    }
+  const handleDarkModeToggle = () => {
+    toggleTheme();
+    toast.success(theme === "light" ? "Dark mode enabled" : "Light mode enabled");
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,7 +125,6 @@ export default function SettingsPage() {
     try {
       await authService.updateProfile({
         preferences: {
-          darkMode,
           emailNotifs,
           securityAlerts,
           language
@@ -288,8 +254,7 @@ export default function SettingsPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Sun className="h-4 w-4 text-slate-500 dark:text-slate-400" />
-                  {/* CHANGED: Use handleDarkModeToggle instead of setDarkMode */}
-                  <Switch checked={darkMode} onCheckedChange={handleDarkModeToggle} />
+                  <Switch checked={theme === "dark"} onCheckedChange={handleDarkModeToggle} />
                   <Moon className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                 </div>
               </div>
