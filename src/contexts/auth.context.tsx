@@ -117,16 +117,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user]);
 
   const login = useCallback(async (email: string, password: string) => {
-    setIsLoading(true);
-    setError(null);
     try {
       const authService = (await import('@/services/auth.service')).default;
       const response = await authService.login({ email, password });
       
+      console.log('[AuthContext] Login response:', { user: response.user, hasAvatar: !!response.user?.avatar });
+      
       Cookies.set('access_token', response.token, {
         expires: 7,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'Lax', // Changed from strict to Lax for better dev experience
+        sameSite: 'Lax',
       });
 
       setUser(response.user || null);
@@ -155,6 +155,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // ADD this new function to properly refresh user data
+  const refreshUser = useCallback(async () => {
+    console.log('[AuthContext] refreshUser called');
+    try {
+      const token = Cookies.get('access_token');
+      if (!token) {
+        console.log('[AuthContext] No token found, cannot refresh');
+        return;
+      }
+
+      // Fetch updated user data from backend
+      const authService = (await import('@/services/auth.service')).default;
+      const response = await authService.getCurrentUser();
+      console.log('[AuthContext] User data refreshed:', { 
+        email: response.email, 
+        avatar: response.avatar,
+        fullAvatarUrl: response.avatar ? (response.avatar.startsWith('http') ? response.avatar : `${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '')}${response.avatar}`) : null
+      });
+      
+      setUser(response);
+    } catch (error) {
+      console.error('[AuthContext] Failed to refresh user:', error);
+    }
+  }, []);
+
   const logout = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -180,14 +205,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (typeof window !== 'undefined') {
         window.location.href = '/auth/login';
       }
-    }
-  }, []);
-
-  const refreshUser = useCallback(async () => {
-    try {
-      await fetchUserData();
-    } catch (error) {
-      console.error('Failed to refresh user data:', error);
     }
   }, []);
 

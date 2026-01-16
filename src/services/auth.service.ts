@@ -46,6 +46,21 @@ export interface ChangePasswordRequest {
   current_password: string;
 }
 
+export interface User {
+  id: string;
+  email: string;
+  first_name?: string;
+  last_name?: string;
+  role?: string;
+  avatar?: string;
+  preferences?: {
+    darkMode?: boolean;
+    emailNotifs?: boolean;
+    securityAlerts?: boolean;
+    language?: string;
+  };
+}
+
 export interface AuthError {
   message: string;
   statusCode: number;
@@ -195,17 +210,57 @@ class AuthService {
     }
   }
 
-  async updateProfile(data: UpdateProfileRequest): Promise<Record<string, unknown>> {
+  async getCurrentUser(): Promise<User> {
+    console.log('[AuthService] Fetching current user data');
+    // Use custom endpoint that supports file uploads
+    const response = await apiClient.get<User>('/users/me/');
+    console.log('[AuthService] Current user response:', { 
+      email: response.data.email, 
+      avatar: response.data.avatar 
+    });
+    return response.data;
+  }
+
+  async updateProfile(data: {
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    avatar?: File;
+    preferences?: Record<string, string | number | boolean | null>;
+  }): Promise<User> {
+    console.log('[AuthService] updateProfile called with:', { 
+      hasAvatar: !!data.avatar,
+      firstName: data.first_name,
+      lastName: data.last_name 
+    });
+
     const formData = new FormData();
+    
     if (data.first_name) formData.append('first_name', data.first_name);
     if (data.last_name) formData.append('last_name', data.last_name);
     if (data.email) formData.append('email', data.email);
+    if (data.avatar) {
+      console.log('[AuthService] Appending avatar file:', { 
+        name: data.avatar.name, 
+        size: data.avatar.size, 
+        type: data.avatar.type 
+      });
+      formData.append('avatar', data.avatar);
+    }
     if (data.preferences) formData.append('preferences', JSON.stringify(data.preferences));
-    if (data.avatar) formData.append('avatar', data.avatar);
 
-    const response = await apiClient.patch('/auth/users/me/', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+    // Use custom endpoint that supports file uploads
+    const response = await apiClient.patch<User>('/users/me/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     });
+
+    console.log('[AuthService] Update profile response:', { 
+      email: response.data.email, 
+      avatar: response.data.avatar 
+    });
+
     return response.data;
   }
 

@@ -39,13 +39,6 @@ export default function SettingsPage() {
   const [language, setLanguage] = useState("en");
 
   useEffect(() => {
-    console.log('[Settings] User data updated:', { 
-      email: user?.email, 
-      avatar: user?.avatar,
-      firstName: user?.first_name,
-      lastName: user?.last_name
-    });
-
     if (user) {
       setFirstName(user.first_name || "");
       setLastName(user.last_name || "");
@@ -54,16 +47,9 @@ export default function SettingsPage() {
       // Set avatar preview from user data if available
       if (user.avatar) {
         // Fix: Handle relative URLs from backend by prepending API URL
-        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/api$/, '').replace(/\/$/, '');
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080').replace(/\/$/, '');
         const avatarUrl = user.avatar.startsWith('http') ? user.avatar : `${apiUrl}${user.avatar}`;
-        console.log('[Settings] Setting avatar preview:', { 
-          rawAvatar: user.avatar, 
-          constructedUrl: avatarUrl 
-        });
         setAvatarPreview(avatarUrl);
-      } else {
-        console.log('[Settings] No avatar in user data, clearing preview');
-        setAvatarPreview(null);
       }
       
       // Load user's personal theme preference
@@ -81,7 +67,7 @@ export default function SettingsPage() {
         setLanguage(user.preferences.language || "en");
       }
     }
-  }, [user, theme, setTheme]); // ADD user dependency
+  }, [user]);
 
   const handleDarkModeToggle = () => {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -98,48 +84,27 @@ export default function SettingsPage() {
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      console.log('[Settings] Avatar file selected:', { 
-        name: file.name, 
-        size: file.size, 
-        type: file.type 
-      });
       setAvatarFile(file);
-      const previewUrl = URL.createObjectURL(file);
-      console.log('[Settings] Created preview URL:', previewUrl);
-      setAvatarPreview(previewUrl);
+      setAvatarPreview(URL.createObjectURL(file));
     }
   };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('[Settings] handleUpdateProfile called', { 
-      hasAvatarFile: !!avatarFile,
-      firstName,
-      lastName 
-    });
-    
     setIsLoading(true);
     try {
-      const updatedUser = await authService.updateProfile({
+      await authService.updateProfile({
         first_name: firstName,
         last_name: lastName,
         email: email,
         avatar: avatarFile || undefined
       });
       
-      console.log('[Settings] Profile updated, calling refreshUser');
-      
       // Refresh user context to update avatar in header/sidebar
       await refreshUser();
       
-      console.log('[Settings] User refreshed, clearing avatar file state');
-      
-      // Clear the file input after successful upload
-      setAvatarFile(null);
-      
       toast.success("Profile updated successfully");
     } catch (error) {
-      console.error('[Settings] Failed to update profile:', error);
       toast.error("Failed to update profile");
     } finally {
       setIsLoading(false);
@@ -216,8 +181,10 @@ export default function SettingsPage() {
               {/* Avatar Upload */}
               <div className="flex items-center gap-6">
                 <Avatar className="h-24 w-24 border-2 border-slate-100 dark:border-slate-700">
+                  {/* CHANGED: Removed "/placeholder-avatar.jpg" to prevent 404 errors. 
+                      It will now default to AvatarFallback if avatarPreview is null. */}
                   <AvatarImage src={avatarPreview || undefined} className="object-cover" />
-                  <AvatarFallback className="text-2xl bg-blue-500 text-white dark:bg-blue-600">
+                  <AvatarFallback className="text-2xl bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
                     {firstName?.[0]}{lastName?.[0]}
                   </AvatarFallback>
                 </Avatar>
