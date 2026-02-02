@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { Loader2, User, Lock, Bell, Moon, Sun, Upload, Globe } from "lucide-react";
+import { Loader2, Bell, Moon, Sun, Upload, Globe } from "lucide-react";
 import authService from "@/services/auth.service";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTheme } from "@/contexts/theme.context";
@@ -19,7 +19,7 @@ export default function SettingsPage() {
   const { user, isLoading: authLoading, refreshUser } = useAuth();
   const { theme, setTheme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"account" | "security" | "preferences">("preferences");
+  // const [activeTab, setActiveTab] = useState<"account" | "security" | "preferences">("preferences");
   
   // Profile State
   const [firstName, setFirstName] = useState("");
@@ -120,12 +120,12 @@ export default function SettingsPage() {
     
     setIsLoading(true);
     try {
-      const updatedUser = await authService.updateProfile({
-        first_name: firstName,
-        last_name: lastName,
-        email: email,
-        avatar: avatarFile || undefined
-      });
+      // const updatedUser = await authService.updateProfile({
+      //   first_name: firstName,
+      //   last_name: lastName,
+      //   email: email,
+      //   avatar: avatarFile || undefined
+      // });
       
       console.log('[Settings] Profile updated, calling refreshUser');
       

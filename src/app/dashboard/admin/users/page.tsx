@@ -152,10 +152,10 @@ export default function UsersPage() {
 
       setIsUserDialogOpen(false);
       fetchData();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to save user", error);
-      const errorMsg = error.response?.data?.email?.[0] || 
-                       error.response?.data?.detail ||
+      const errorMsg = (error as { response?: { data?: { email?: string[]; detail?: string } } }).response?.data?.email?.[0] || 
+                       (error as { response?: { data?: { email?: string[]; detail?: string } } }).response?.data?.detail ||
                        "Failed to save user";
       toast.error(errorMsg);
     } finally {
@@ -178,9 +178,9 @@ export default function UsersPage() {
       setIsDeleteDialogOpen(false);
       setDeletingUser(null);
       fetchData();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to delete user", error);
-      const errorMsg = error.response?.data?.detail || "Failed to delete user";
+      const errorMsg = (error as { response?: { data?: { detail?: string } } }).response?.data?.detail || "Failed to delete user";
       toast.error(errorMsg);
     } finally {
       setIsDeleting(false);
@@ -296,11 +296,12 @@ export default function UsersPage() {
       </div>
 
       {/* Users Table */}
-      {isLoading ? (
+      {isLoading && (
         <div className="flex justify-center items-center h-64">
           <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
         </div>
-      ) : filteredUsers.length === 0 ? (
+      )}
+      {!isLoading && filteredUsers.length === 0 && (
         <div className="text-center py-20 bg-slate-50 rounded-2xl border border-dashed border-slate-300 dark:bg-slate-900 dark:border-slate-700">
           <UsersIcon className="w-16 h-16 text-slate-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-slate-900 dark:text-white">No users found</h3>
@@ -308,7 +309,8 @@ export default function UsersPage() {
             {searchQuery ? "Try adjusting your search terms" : "Get started by creating your first user"}
           </p>
         </div>
-      ) : (
+      )}
+      {!isLoading && filteredUsers.length > 0 && (
         <Card className="overflow-hidden dark:bg-slate-900 dark:border-slate-800">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -327,14 +329,14 @@ export default function UsersPage() {
                   <tr key={user.id} className="hover:bg-slate-50/50 transition-colors dark:hover:bg-slate-800/50">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold">
+                        <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold">
                           {user.first_name[0]}{user.last_name[0]}
                         </div>
                         <div>
                           <p className="font-medium text-slate-900 dark:text-white">
                             {user.first_name} {user.last_name}
                           </p>
-                          {user.id === currentUser?.id && (
+                          {user.id === Number(currentUser?.id) && (
                             <span className="text-xs text-blue-600 dark:text-blue-400">(You)</span>
                           )}
                         </div>
@@ -372,7 +374,7 @@ export default function UsersPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDeleteClick(user)}
-                          disabled={user.id === currentUser?.id}
+                          disabled={user.id === Number(currentUser?.id)}
                           className="text-red-500 hover:text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed dark:hover:bg-red-900/20"
                         >
                           <Trash2 className="w-4 h-4" />

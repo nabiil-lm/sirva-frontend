@@ -5,14 +5,12 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/auth.context";
 import apiClient from "@/lib/api-client";
 import { 
-  FolderPlus, 
-  FileCheck, 
+  FolderPlus,  
   AlertTriangle, 
   TrendingUp, 
   Clock, 
   ArrowRight,
   ShieldCheck,
-  MoreHorizontal
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";

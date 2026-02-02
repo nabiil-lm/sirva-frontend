@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+//import React from "react";
 import { ScoreGauge } from "./ScoreGauge";
 import { AlertCircle, CheckCircle2, FileText, ArrowRight, ShieldCheck, AlertTriangle, Lightbulb } from "lucide-react";
 import { Card } from "@/components/ui/card";

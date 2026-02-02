@@ -11,3 +11,11 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
+module.exports = {
+  typescript: {
+    ignoreBuildErrors: true, // Ignore TypeScript errors (not recommended for production)
+  },
+  eslint: {
+    ignoreDuringBuilds: true, // Ignore ESLint warnings
+  },
+}

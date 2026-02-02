@@ -21,7 +21,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 export default function HelpPage() {
-  const { user, userRole } = useAuth();
+  const { userRole } = useAuth();
 
   // Determine user role for content filtering
   const isAM = userRole === 'AM' || userRole === 'application_manager';
@@ -92,7 +92,7 @@ function ApplicationManagerHelpContent() {
             <h2 className="text-2xl font-bold text-slate-900 mb-3 dark:text-white">Welcome, Application Manager</h2>
             <p className="text-slate-700 leading-relaxed dark:text-slate-300">
               As an Application Manager (AM), you are responsible for creating and managing security assessment 
-              dossiers for your applications. You'll work closely with Security Officers to ensure your applications 
+              dossiers for your applications. You&apos;ll work closely with Security Officers to ensure your applications 
               meet security standards through a structured validation process.
             </p>
           </div>
@@ -187,7 +187,7 @@ function ApplicationManagerHelpContent() {
               <ArrowRight className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0 dark:text-blue-400" />
               <div>
                 <h4 className="font-semibold text-slate-900 mb-1 dark:text-white">Assignment</h4>
-                <p className="text-slate-600 dark:text-slate-400">When creating a dossier, you'll select a Security Officer to oversee your assessment. They will review your submissions and create risk items.</p>
+                <p className="text-slate-600 dark:text-slate-400">When creating a dossier, you&apos;ll select a Security Officer to oversee your assessment. They will review your submissions and create risk items.</p>
               </div>
             </div>
             
@@ -223,7 +223,7 @@ function ApplicationManagerHelpContent() {
               <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             </div>
             <h4 className="font-semibold text-slate-900 mb-2 dark:text-white">Accept</h4>
-            <p className="text-sm text-slate-600 dark:text-slate-400">Acknowledge the risk and confirm you'll implement the recommended mitigation measures.</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400">Acknowledge the risk and confirm you&apos;ll implement the recommended mitigation measures.</p>
           </Card>
           
           <Card className="p-5 dark:bg-slate-900 dark:border-slate-800">
@@ -264,7 +264,7 @@ function SecurityOfficerHelpContent() {
             <h2 className="text-2xl font-bold text-slate-900 mb-3 dark:text-white">Welcome, Security Officer</h2>
             <p className="text-slate-700 leading-relaxed dark:text-slate-300">
               As a Security Officer (SO), you play a critical role in validating security assessments and ensuring 
-              applications meet organizational security standards. You'll review submissions, create risk registers, 
+              applications meet organizational security standards. You&apos;ll review submissions, create risk registers, 
               and guide Application Managers through the validation process.
             </p>
           </div>
@@ -373,7 +373,7 @@ function SecurityOfficerHelpContent() {
               <ArrowRight className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0 dark:text-blue-400" />
               <div>
                 <h4 className="font-semibold text-slate-900 mb-1 dark:text-white">Contestation Resolution</h4>
-                <p className="text-slate-600 dark:text-slate-400">When AMs contest risks, review their arguments objectively. It's okay to invalidate a risk if their reasoning is valid.</p>
+                <p className="text-slate-600 dark:text-slate-400">When AMs contest risks, review their arguments objectively. It&apos;s okay to invalidate a risk if their reasoning is valid.</p>
               </div>
             </div>
           </div>
@@ -639,7 +639,7 @@ function CommonHelpContent() {
           </div>
           <h3 className="text-2xl font-bold text-slate-900 mb-3 dark:text-white">Still Need Help?</h3>
           <p className="text-slate-600 max-w-2xl mx-auto mb-6 dark:text-slate-400">
-            If you have questions that aren't covered in this guide, or if you encounter any issues 
+            If you have questions that aren&apos;t covered in this guide, or if you encounter any issues 
             while using SIRVA, please contact your system administrator or the support team.
           </p>
           <div className="flex items-center justify-center gap-4">

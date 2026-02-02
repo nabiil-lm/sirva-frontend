@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { 
-  AlertTriangle, CheckCircle2, XCircle, HelpCircle, 
-  ChevronDown, ChevronUp, MoreHorizontal, ShieldAlert, 
-  UserPlus, Gavel, Plus, Trash2, Edit, Send, Lock,
-  AlertCircle, Save, Share2 // Added Share2
+  AlertTriangle, HelpCircle, ShieldAlert, 
+  UserPlus, Gavel, Plus, Trash2, Edit, Send,
+  Share2 // Added Share2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -17,7 +16,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,7 +31,7 @@ import { toast } from "sonner";
 import dossierService, { SecurityOfficer } from "@/services/dossier.service";
 import { 
   Dossier, RiskItem, RiskItemStatus, RiskStatus, 
-  RiskLevel, RiskLikelihood, RiskImpact 
+  RiskLikelihood, RiskImpact 
 } from "@/types/dossier";
 import { cn } from "@/lib/utils";
 import { User } from "@/contexts/auth.context";
@@ -51,7 +49,7 @@ export function RiskRegister({ dossier, userRole, currentUser, onUpdate }: RiskR
   const isAM = userRole === 'AM' || userRole === 'application_manager';
   
   // User info for delegation
-  const [availableUsers, setAvailableUsers] = useState<SecurityOfficer[]>([]); // Using SO type for generic user list
+  // const [availableUsers, setAvailableUsers] = useState<SecurityOfficer[]>([]); // Using SO type for generic user list
   
   // Action States
   const [selectedRisk, setSelectedRisk] = useState<RiskItem | null>(null);
