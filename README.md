@@ -3,11 +3,11 @@
 ## 📋 Table des Matières
 
 1. [Présentation](#-présentation)
-2. [Architecture Technique](#-architecture-technique)
-3. [Technologies Utilisées](#-technologies-utilisees)
+2. [Architecture Technique](#architecture-technique)
+3. [Technologies Utilisées](#technologies-utilisees)
 4. [Structure du Projet](#-structure-du-projet)
 5. [Composants Principaux](#-composants-principaux)
-6. [Gestion d'État](#-gestion-detat)
+6. [Gestion d'État](#gestion-detat)
 7. [Workflows Utilisateur](#-workflows-utilisateur)
 8. [Pages et Routes](#-pages-et-routes)
 9. [Intégration API](#-intégration-api)
