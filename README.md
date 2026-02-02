@@ -4,10 +4,10 @@
 
 1. [Présentation](#-présentation)
 2. [Architecture Technique](#-architecture-technique)
-3. [Technologies Utilisées](#-technologies-utilisées)
+3. [Technologies Utilisées](#-technologies-utilisees)
 4. [Structure du Projet](#-structure-du-projet)
 5. [Composants Principaux](#-composants-principaux)
-6. [Gestion d'État](#-gestion-détat)
+6. [Gestion d'État](#-gestion-detat)
 7. [Workflows Utilisateur](#-workflows-utilisateur)
 8. [Pages et Routes](#-pages-et-routes)
 9. [Intégration API](#-intégration-api)
@@ -41,7 +41,7 @@ L'interface permet à trois types d'utilisateurs de collaborer efficacement :
 
 ---
 
-## 🏗️ Architecture Technique
+## 🏗️ Architecture Technique <a id="architecture-technique"></a>
 
 ### Stack Frontend
 
@@ -112,7 +112,7 @@ L'interface permet à trois types d'utilisateurs de collaborer efficacement :
 
 ---
 
-## 🛠️ Technologies Utilisées
+## 🛠️ Technologies Utilisées <a id="technologies-utilisees"></a>
 
 ### Dépendances Principales
 
@@ -451,7 +451,7 @@ interface AnalysisResultsProps {
 
 ---
 
-## 🗄️ Gestion d'État
+## 🗄️ Gestion d'État <a id="gestion-detat"></a>
 
 ### AuthContext
 
