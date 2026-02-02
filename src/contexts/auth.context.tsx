@@ -125,7 +125,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       Cookies.set('access_token', response.token, {
         expires: 7,
-        secure: process.env.NODE_ENV === 'production',
+        //secure: process.env.NODE_ENV === 'production',
+        secure: false, // Keep false for non-HTTPS dev/staging
+
         sameSite: 'Lax',
       });
 

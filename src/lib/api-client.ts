@@ -19,6 +19,12 @@ const apiClient = axios.create({
 // Request interceptor - add auth token and CSRF token
 apiClient.interceptors.request.use(
   (config) => {
+    // Debug logging for production troubleshooting
+    if (process.env.NODE_ENV === 'production') {
+      const token = Cookies.get('access_token');
+      console.log('[API Client] Production request - Token present:', !!token);
+    }
+
     // Manually ensure CSRF token is set from cookie if it exists
     const csrfToken = Cookies.get('csrftoken');
     if (csrfToken) {
