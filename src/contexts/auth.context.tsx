@@ -127,6 +127,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         expires: 7,
         //secure: process.env.NODE_ENV === 'production',
         secure: false, // Keep false for non-HTTPS dev/staging
+        path: '/', // Ensure cookie is available to all paths
 
         sameSite: 'Lax',
       });
