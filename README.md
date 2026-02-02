@@ -1502,28 +1502,35 @@ stateDiagram-v2
     
     CheckSystem --> CheckStorage: Vérifier localStorage
     
-    CheckStorage --> Light: theme_${userId} = 'light'
-    CheckStorage --> Dark: theme_${userId} = 'dark'
+    CheckStorage --> Light: theme_${userId} == 'light'
+    CheckStorage --> Dark: theme_${userId} == 'dark'
     CheckStorage --> SystemPref: Pas de préférence sauvegardée
     
-    SystemPref --> Light: prefers-color-scheme: light
-    SystemPref --> Dark: prefers-color-scheme: dark
+    state "prefers-color-scheme: light" as PrefLight
+    state "prefers-color-scheme: dark" as PrefDark
     
-    Light --> ApplyLight: Appliquer thème clair
-    Dark --> ApplyDark: Appliquer thème sombre
+    SystemPref --> PrefLight
+    SystemPref --> PrefDark
     
-    ApplyLight --> Running: <html> sans classe 'dark'
-    ApplyDark --> Running: <html class="dark">
+    PrefLight --> ApplyLight
+    PrefDark --> ApplyDark
+    
+    state "<html> sans classe 'dark'" as ApplyLight
+    state "<html class='dark'>" as ApplyDark
+    
+    ApplyLight --> Running
+    ApplyDark --> Running
     
     Running --> ToggleEvent: User clique toggle
     
-    ToggleEvent --> CheckCurrent: Thème actuel?
+    state "Thème actuel ?" as CheckCurrent
+    ToggleEvent --> CheckCurrent
     
-    CheckCurrent --> SwitchToDark: Était Light
-    CheckCurrent --> SwitchToLight: Était Dark
+    CheckCurrent --> SaveDark: Était Light
+    CheckCurrent --> SaveLight: Était Dark
     
-    SwitchToDark --> SaveDark: localStorage.setItem('theme_${userId}', 'dark')
-    SwitchToLight --> SaveLight: localStorage.setItem('theme_${userId}', 'light')
+    state "Save 'dark' to localStorage" as SaveDark
+    state "Save 'light' to localStorage" as SaveLight
     
     SaveDark --> ApplyDark
     SaveLight --> ApplyLight
@@ -1531,58 +1538,45 @@ stateDiagram-v2
 
 ### 5. Diagramme de Flux Upload Document
 
-**Outil** : [PlantUML Web Server](http://www.plantuml.com/plantuml/)
+**Outil** : [Mermaid Live Editor](https://mermaid.live/)
 
-```plantuml
-@startuml
-actor AM as "Application Manager"
-participant UI as "ArchitectureUpload Component"
-participant State as "React State"
-participant API as "dossierService"
-participant Backend as "Django API"
-participant Storage as "MinIO / Azure"
+```mermaid
+sequenceDiagram
+    actor AM as Application Manager
+    participant UI as ArchitectureUpload Component
+    participant State as React State
+    participant API as dossierService
+    participant Backend as Django API
+    participant Storage as MinIO / Azure
 
-== Upload Document ==
-AM -> UI: Drag & drop PDF file
-UI -> State: setFile(selectedFile)
-UI -> AM: Affiche preview + formulaire
+    Note over AM, UI: == Upload Document ==
+    AM->>UI: Drag & drop PDF file
+    UI->>State: setFile(selectedFile)
+    UI->>AM: Affiche preview + formulaire
 
-AM -> UI: Remplit display_name + description
-AM -> UI: Coche "RSSI Confirmed"
-AM -> UI: Clique "Upload"
+    AM->>UI: Remplit display_name + description
+    AM->>UI: Coche "RSSI Confirmed"
+    AM->>UI: Clique "Upload"
 
-UI -> State: setIsUploading(true)
-UI -> API: uploadDocument(dossierId, file, data)
+    UI->>State: setIsUploading(true)
+    UI->>API: uploadDocument(dossierId, file, data)
 
-API -> Backend: POST /dossiers/{id}/documents/\n(multipart/form-data)
-Backend -> Storage: Upload PDF
-Storage --> Backend: File URL
-Backend -> Backend: Create ArchitectureDoc model
-Backend --> API: 201 Created {id, filename, size, ...}
+    API->>Backend: POST /dossiers/{id}/documents/
+    Backend->>Storage: Upload PDF
+    Storage-->>Backend: File URL
+    Backend->>Backend: Create ArchitectureDoc model
+    Backend-->>API: 201 Created
+    API-->>UI: Success
+    UI->>State: setFile(null), setIsUploading(false)
+    UI-->>AM: Toast "Success"
 
-API --> UI: Success
-UI -> State: setFile(null), reset form
-UI -> State: setIsUploading(false)
-UI -> UI: onUploadComplete() (refresh list)
-UI -> AM: Toast "Document uploaded successfully"
-
-== Submit All Documents ==
-AM -> UI: Clique "Submit for IA2 Analysis"
-UI -> UI: Show confirmation dialog
-AM -> UI: Confirme
-UI -> State: setIsSubmitting(true)
-UI -> API: submitDocuments(dossierId)
-
-API -> Backend: POST /dossiers/{id}/documents/submit_documents/
-Backend -> Backend: Change status to IA2_COHERENT (pending)
-Backend -> Backend: Trigger IA2 analysis (async)
-Backend --> API: 200 OK
-
-API --> UI: Success
-UI -> UI: onSubmitComplete() (fetch dossier + switch tab)
-UI -> State: setIsSubmitting(false)
-UI -> AM: Toast "Documents submitted. Analysis started."
-@enduml
+    Note over AM, UI: == Submit All Documents ==
+    AM->>UI: Clique "Submit for IA2 Analysis"
+    UI->>API: submitDocuments(dossierId)
+    API->>Backend: POST /submit_documents/
+    Backend-->>API: 200 OK
+    API-->>UI: Success
+    UI-->>AM: Toast "Analysis started"
 ```
 
 ---
